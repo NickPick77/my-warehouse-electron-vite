@@ -1,11 +1,67 @@
 <script setup lang="ts">
-import Versions from './components/Versions.vue'
+import { onMounted } from 'vue'
+
+import { useItemsStore } from './store/items'
+
+const itemsStore = useItemsStore()
+
+const { addItemSuccess } = window.events
+
+onMounted(async () => {
+  try {
+    await itemsStore.initItemsStore()
+  } catch (error) {
+    console.log(error)
+  }
+
+  await addItemSuccess(() => {
+    itemsStore.initItemsStore()
+  })
+})
 </script>
 
 <template>
-  <Versions></Versions>
+  <router-view></router-view>
+</template>
 
-  <svg class="hero-logo" viewBox="0 0 900 300">
+<style lang="scss">
+@use 'assets/style/main.scss' as *;
+
+@import '@fortawesome/fontawesome-svg-core/styles.css';
+
+@import 'assets/css/styles.css';
+</style>
+
+<!-- <script setup lang="ts">
+import { onMounted } from "vue";
+
+import { useItemsStore } from "./store/items";
+
+const itemsStore = useItemsStore();
+
+const { addItemSuccess, barCodeSuccess } = window.events;
+
+await useAsyncData("items", async () => {
+  try {
+    await itemsStore.initItemsStore();
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+onMounted(async () => {
+  await addItemSuccess(() => {
+    itemsStore.initItemsStore();
+  });
+});
+</script>
+
+<template>
+  <NuxtPage />
+</template>
+
+<style lang="scss" scoped></style> -->
+<!-- <svg class="hero-logo" viewBox="0 0 900 300">
     <use xlink:href="./assets/icons.svg#electron" />
   </svg>
   <h2 class="hero-text">You've successfully created an Electron project with Vue and TypeScript</h2>
@@ -89,38 +145,4 @@ import Versions from './components/Versions.vue'
         </p>
       </article>
     </div>
-  </div>
-</template>
-
-<style lang="less">
-@import './assets/css/styles.less';
-</style>
-<!-- <script setup lang="ts">
-import { onMounted } from "vue";
-
-import { useItemsStore } from "./store/items";
-
-const itemsStore = useItemsStore();
-
-const { addItemSuccess, barCodeSuccess } = window.events;
-
-await useAsyncData("items", async () => {
-  try {
-    await itemsStore.initItemsStore();
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-onMounted(async () => {
-  await addItemSuccess(() => {
-    itemsStore.initItemsStore();
-  });
-});
-</script>
-
-<template>
-  <NuxtPage />
-</template>
-
-<style lang="scss" scoped></style> -->
+ </div> -->

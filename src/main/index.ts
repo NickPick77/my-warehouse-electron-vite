@@ -2,24 +2,10 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../resources/icon.png?asset'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const sqlite3 = require('sqlite3')
-
-function createWindow(): void {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
-    show: false,
-    autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
-    webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
-    }
-  })
-}
+// import icon from '../../resources/icon.png?asset'
+import { Database } from 'sqlite3'
+import { type Database as DatabaseType } from 'sqlite3'
+import { ItemPayload } from '../renderer/src/types/items'
 
 process.env.ROOT = join(__dirname, '..')
 process.env.ELECTRON = join(process.env.ROOT, 'electron')
@@ -33,9 +19,9 @@ let mainWindow: BrowserWindow | null
 let productWindow: BrowserWindow | null
 let cameraWindow: BrowserWindow | null
 
-let db: unknown
-// const preload = join(process.env.ROOT, 'preload/index.js')
-// const icon = join(process.env.ROOT, 'renderer/warehouse.png')
+let db: DatabaseType
+const preload = join(process.env.ROOT, 'preload/index.js')
+const icon = join(process.env.ROOT, 'resources/warehouse.png')
 
 const configureWindow = (window, hash = '') => {
   window.webContents.on('did-finish-load', (callback) => {
@@ -43,6 +29,8 @@ const configureWindow = (window, hash = '') => {
       callback()
     }
   })
+  console.log(join(app.getAppPath(), 'items.db'))
+  console.log(app.getAppPath())
 
   if (hash === '') {
     window.maximize()
@@ -61,36 +49,44 @@ const configureWindow = (window, hash = '') => {
     return { action: 'deny' }
   })
 
-  // // HMR for renderer base on electron-vite cli.
-  // // Load the remote URL for development or the local html file for production.
-  // if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-  //   window.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  // } else {
-  //   window.loadFile(join(__dirname, '../renderer/index.html'))
-  // }
+  console.log(process.env['ELECTRON_RENDERER_URL'])
+  console.log('production load file', join(__dirname, `../renderer/index.html${hash}`))
 
-  if (is.dev && process.env.VITE_DEV_SERVER_URL) {
-    window.loadURL(`${process.env.VITE_DEV_SERVER_URL}${hash}`)
-    if (hash !== '#WebCamModal') {
-      window.webContents.openDevTools()
-    }
-  } else {
-    window.loadFile(join(process.env.VITE_PUBLIC, `index.html${hash}`))
+  // HMR for renderer base on electron-vite cli.
+  // Load the remote URL for development or the local html file for production.
+  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    window.loadURL(`${process.env['ELECTRON_RENDERER_URL']}${hash}`)
     window.webContents.openDevTools()
+
+    // if (hash !== '#WebCamModal') {
+    //   window.webContents.openDevTools()
+    // }
+  } else {
+    window.loadFile(join(__dirname, `../renderer/index.html${hash}`))
   }
 
+  // if (is.dev && process.env.VITE_DEV_SERVER_URL) {
+  //   window.loadURL(`${process.env.VITE_DEV_SERVER_URL}${hash}`)
+  //   if (hash !== '#WebCamModal') {
+  //     window.webContents.openDevTools()
+  //   }
+  // } else {
+  //   window.loadFile(join(process.env.VITE_PUBLIC as string, `index.html${hash}`))
+  //   window.webContents.openDevTools()
+  // }
+
   if (hash === '#WebCamModal') {
-    console.log('hello')
     window.setTitle('My Warehose - Bar Code WebCam Scanner')
   }
 }
+
 const createMainWindow = () => {
   mainWindow = new BrowserWindow({
     icon,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      // preload,
+      preload,
       nodeIntegrationInWorker: true,
       contextIsolation: true,
       webSecurity: false,
@@ -98,8 +94,12 @@ const createMainWindow = () => {
     }
   })
 
-  const dbPath = join(app.getAppPath(), 'items.db')
-  db = new sqlite3.Database(dbPath)
+  // join(app.getAppPath(), 'items.db')
+
+  const appPath = app.getAppPath().replace('app.asar', 'items.sqlite')
+
+  const dbPath = appPath
+  db = new Database(dbPath)
   db.run(`
     CREATE TABLE IF NOT EXISTS items (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -214,14 +214,17 @@ app.whenReady().then(() => {
 
   ipcMain.handle('getAllItems', async () => {
     try {
-      const items = await new Promise((resolve, reject) => {
-        db.all('SELECT id, isSelected, bar_code, item_name, quantity FROM items', (err, items) => {
-          if (err) {
-            reject({ success: false, error: err.message })
-          } else {
-            resolve(items)
+      const items: ItemPayload[] = await new Promise((resolve, reject) => {
+        db.all(
+          'SELECT id, isSelected, bar_code, item_name, quantity FROM items',
+          (err, items: ItemPayload[]) => {
+            if (err) {
+              reject({ success: false, error: err.message })
+            } else {
+              resolve(items)
+            }
           }
-        })
+        )
       })
       const parsedItems = items.map((item) => ({
         ...item,
@@ -230,11 +233,11 @@ app.whenReady().then(() => {
       return { success: true, items: parsedItems }
     } catch (error) {
       console.error('Error retrieving items:', error)
-      return { success: false, error: error.message }
+      return { success: false, error: (error as Error).message }
     }
   })
 
-  ipcMain.handle('addItem', (event, itemDetails) => {
+  ipcMain.handle('addItem', (_, itemDetails) => {
     const { isSelected, bar_code, item_name, quantity } = itemDetails
     db.run(
       `
@@ -253,7 +256,7 @@ app.whenReady().then(() => {
     mainWindow?.webContents.send('addItemSuccess')
   })
 
-  ipcMain.handle('removeAllItems', (event) => {
+  ipcMain.handle('removeAllItems', () => {
     db.run('DELETE FROM items', (err) => {
       if (err) {
         console.log('items-removed', { success: false, error: err.message })
@@ -263,7 +266,7 @@ app.whenReady().then(() => {
     })
   })
 
-  ipcMain.handle('removeItem', (event, itemId) => {
+  ipcMain.handle('removeItem', (_, itemId) => {
     db.run('DELETE FROM items WHERE id = ?', [itemId], (err) => {
       if (err) {
         console.log('item-removed', { success: false, error: err.message })
@@ -273,7 +276,7 @@ app.whenReady().then(() => {
     })
   })
 
-  ipcMain.handle('removeSelectedItems', (event, itemIds) => {
+  ipcMain.handle('removeSelectedItems', (_, itemIds) => {
     db.serialize(() => {
       const stmt = db.prepare('DELETE FROM items WHERE id = ?')
       itemIds.forEach((id) => {
@@ -293,7 +296,7 @@ app.whenReady().then(() => {
     createWebCamWindow()
   })
 
-  ipcMain.handle('barCodeDetected', (event, quaggaPayload) => {
+  ipcMain.handle('barCodeDetected', (_, quaggaPayload) => {
     productWindow?.webContents.send('barCodeSuccess', quaggaPayload)
     if (cameraWindow) {
       cameraWindow.close()
