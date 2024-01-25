@@ -1,10 +1,15 @@
 import { resolve } from 'path'
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import { defineConfig, externalizeDepsPlugin, splitVendorChunkPlugin } from 'electron-vite'
 import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()]
+    plugins: [externalizeDepsPlugin()],
+    build: {
+      rollupOptions: {
+        external: ['sqlite3']
+      }
+    }
   },
   preload: {
     plugins: [externalizeDepsPlugin()]
@@ -15,6 +20,11 @@ export default defineConfig({
         '@renderer': resolve('src/renderer/src')
       }
     },
-    plugins: [vue()]
+    plugins: [vue(), splitVendorChunkPlugin()],
+    build: {
+      rollupOptions: {
+        input: resolve(__dirname, 'src/renderer/index.html')
+      }
+    }
   }
 })
