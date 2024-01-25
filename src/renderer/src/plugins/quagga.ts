@@ -1,9 +1,8 @@
-import Quagga from "quagga";
+import Quagga from 'quagga'
+import { type App } from 'vue'
 
-export default defineNuxtPlugin((nuxtApp) => {
-  return {
-    provide: {
-      Quagga: Quagga,
-    },
-  };
-});
+export default {
+  install: (app: App) => {
+    app.provide('Quagga', Quagga)
+  }
+}

@@ -1,64 +1,58 @@
-import { defineStore } from "pinia";
-import { itemsState } from "./state";
-import { itemsGetters } from "./getters";
+import { defineStore } from 'pinia'
+import { itemsState } from './state'
+import { itemsGetters } from './getters'
 
-import { type ItemPayload } from "../../types/items";
+import { type ItemPayload } from '../../types/items'
 
-const {
-  getAllItems,
-  addItem,
-  removeItem,
-  removeAllItems,
-  removeSelectedItems,
-} = window.events;
+const { getAllItems, addItem, removeItem, removeAllItems, removeSelectedItems } = window.events
 
-export const useItemsStore = defineStore("items", {
+export const useItemsStore = defineStore('items', {
   state: itemsState(),
-  getters: itemsGetters(),
+  getters: itemsGetters,
   actions: {
     async initItemsStore() {
-      const { items } = await getAllItems();
+      const { items } = await getAllItems()
 
-      this.items = items;
+      this.items = items
     },
     async clearAllItems() {
-      this.items = [];
-      this.allItemSelected = false;
-      await removeAllItems();
+      this.items = []
+      this.allItemSelected = false
+      await removeAllItems()
     },
-    async clearSelectedItems(ids) {
-      this.items = this.items.filter((item) => !ids.includes(item.id));
-      await removeSelectedItems(ids);
+    async clearSelectedItems(ids: number[]) {
+      this.items = this.items.filter((item) => !ids.includes(Number(item.id)))
+      await removeSelectedItems(ids)
     },
-    async handleAddItem(item) {
-      this.items.push(item);
-      await addItem(item);
+    async handleAddItem(item: ItemPayload) {
+      this.items.push(item)
+      await addItem(item)
     },
-    async handleRemoveItem(id: ItemPayload["id"]) {
-      this.items = this.items.filter((item) => item.id !== id);
-      await removeItem(id);
+    async handleRemoveItem(id: ItemPayload['id']) {
+      this.items = this.items.filter((item) => item.id !== id)
+      await removeItem(Number(id))
     },
-    async handleSelectItem(id: ItemPayload["id"]) {
+    async handleSelectItem(id: ItemPayload['id']) {
       this.items.find((item: ItemPayload) => {
         if (item.id === id) {
-          item.isSelected = !item.isSelected;
+          item.isSelected = !item.isSelected
         }
-      });
+      })
     },
     async handleSelectAllItems() {
       this.items.forEach((item) => {
         if (this.allItemSelected) {
-          item.isSelected = false;
-          return;
+          item.isSelected = false
+          return
         }
 
         if (!this.allItemSelected) {
-          item.isSelected = true;
-          return;
+          item.isSelected = true
+          return
         }
-      });
+      })
 
-      this.allItemSelected = !this.allItemSelected;
-    },
-  },
-});
+      this.allItemSelected = !this.allItemSelected
+    }
+  }
+})

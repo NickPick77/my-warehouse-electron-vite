@@ -1,83 +1,95 @@
-import { ref, onMounted, onBeforeUnmount } from "vue";
-
-const nuxtApp = useNuxtApp();
+import { QuaggaImageObject } from '../types/quagga'
+import { inject, onMounted } from 'vue'
 
 export const useQuaggaScanRectangle = () => {
-  function calculateRectFromArea(canvas, area) {
-    var canvasWidth = canvas.width,
-      canvasHeight = canvas.height,
-      top = parseInt(area.top) / 100,
-      right = parseInt(area.right) / 100,
-      bottom = parseInt(area.bottom) / 100,
-      left = parseInt(area.left) / 100;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const $Quagga: any = inject('Quagga')
 
-    top *= canvasHeight;
-    right = canvasWidth - canvasWidth * right;
-    bottom = canvasHeight - canvasHeight * bottom;
-    left *= canvasWidth;
+  // function calculateRectFromArea(canvas, area) {
+  //   const canvasWidth = ref(canvas.width),
+  //     canvasHeight = ref(canvas.height)
 
-    return {
-      x: left,
-      y: top,
-      width: right - left,
-      height: bottom - top,
-    };
-  }
+  //   const top = ref(parseInt(area.top) / 100),
+  //     right = ref(parseInt(area.right) / 100),
+  //     bottom = ref(parseInt(area.bottom) / 100),
+  //     left = ref(parseInt(area.left) / 100)
+
+  //   top.value *= canvasHeight.value
+  //   right.value = canvasWidth.value - canvasWidth.value * right.value
+  //   bottom.value = canvasHeight.value - canvasHeight.value * bottom.value
+  //   left.value *= canvasWidth.value
+
+  //   return {
+  //     x: left.value,
+  //     y: top.value,
+  //     width: right.value - left.value,
+  //     height: bottom.value - top.value
+  //   }
+  // }
+  // const resultCollector = Quagga.ResultCollector.create({
+  //   capture: true, // keep track of the image producing this result
+  //   capacity: 20, // maximum number of results to store
+  //   blacklist: [
+  //     // list containing codes which should not be recorded
+  //     { code: '3574660239843', format: 'ean_13' }
+  //   ],
+  //   filter: function (codeResult) {
+  //     // only store results which match this constraint
+  //     // returns true/false
+  //     // e.g.: return codeResult.format === "ean_13";
+  //     return true
+  //   }
+  // })
 
   onMounted(() => {
-    console.log("composable work");
-    nuxtApp.$Quagga.onProcessed(function (result) {
-        console.log(nuxtApp.$Quagga.canvas)
-      const drawingCtx = nuxtApp.$Quagga.canvas.ctx.overlay;
-      const drawingCanvas = nuxtApp.$Quagga.canvas.dom.overlay;
-      let area;
+    $Quagga.onProcessed(function (result: QuaggaImageObject) {
+      const drawingCtx = $Quagga.canvas.ctx.overlay
+      const drawingCanvas = $Quagga.canvas.dom.overlay
 
       if (result) {
         if (result.boxes) {
           drawingCtx.clearRect(
             0,
             0,
-            parseInt(drawingCanvas.getAttribute("width")),
-            parseInt(drawingCanvas.getAttribute("height"))
-          );
+            parseInt(drawingCanvas.getAttribute('width')),
+            parseInt(drawingCanvas.getAttribute('height'))
+          )
           result.boxes
             .filter(function (box) {
-              return box !== result.box;
+              return box !== result.box
             })
             .forEach(function (box) {
-              nuxtApp.$Quagga.ImageDebug.drawPath(
-                box,
-                { x: 0, y: 1 },
-                drawingCtx,
-                { color: "green", lineWidth: 2 }
-              );
-            });
+              $Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, {
+                color: 'green',
+                lineWidth: 2
+              })
+            })
         }
 
         if (result.box) {
-          nuxtApp.$Quagga.ImageDebug.drawPath(
-            result.box,
-            { x: 0, y: 1 },
-            drawingCtx,
-            { color: "#00F", lineWidth: 2 }
-          );
+          $Quagga.ImageDebug.drawPath(result.box, { x: 0, y: 1 }, drawingCtx, {
+            color: '#00F',
+            lineWidth: 2
+          })
         }
 
         if (result.codeResult && result.codeResult.code) {
-          nuxtApp.$Quagga.ImageDebug.drawPath(
-            result.line,
-            { x: "x", y: "y" },
-            drawingCtx,
-            { color: "red", lineWidth: 3 }
-          );
+          $Quagga.ImageDebug.drawPath(result.line, { x: 'x', y: 'y' }, drawingCtx, {
+            color: 'red',
+            lineWidth: 3
+          })
         }
       }
-    });
+    })
 
-    // nuxtApp.$Quagga.onDetected(function (result) {
+    $Quagga.onDetected(() => {
+      console.log('e che cazzo')
+    })
+
+    // $Quagga.onDetected(function (result) {
     //   const code = result.codeResult.code,
     //     $node,
-    //     canvas = nuxtApp.$Quagga.canvas.dom.image;
+    //     canvas = $Quagga.canvas.dom.image;
 
     //   $node = $(
     //     '<li><div class="thumbnail"><div class="imgWrapper"><img /></div><div class="caption"><h4 class="code"></h4></div></div></li>'
@@ -86,5 +98,5 @@ export const useQuaggaScanRectangle = () => {
     //   $node.find("h4.code").html(code);
     //   $("#result_strip ul.thumbnails").prepend($node);
     // });
-  });
-};
+  })
+}
