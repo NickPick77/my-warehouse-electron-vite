@@ -16,23 +16,31 @@
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:win": "npm run build && electron-builder --win --config",
-    "build:mac": "npm run build && electron-builder --mac --config",
-    "build:linux": "npm run build && electron-builder --linux --config"
+    "build:mac": "npm run build && electron-builder --mac --arm64 --config",
+    "build:linux": "npm run build && electron-builder --linux --config",
+    "preclean": "npm uninstall sqlite3",
+    "clean": "npm ci && npm install sqlite3 --build-from-source --target_arch=arm64 --fallback-to-build"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
+    "@fortawesome/fontawesome-svg-core": "^6.5.1",
+    "@fortawesome/free-brands-svg-icons": "^6.5.1",
+    "@fortawesome/free-regular-svg-icons": "^6.5.1",
+    "@fortawesome/free-solid-svg-icons": "^6.5.1",
+    "@fortawesome/vue-fontawesome": "^3.0.5",
     "electron-updater": "^6.1.7",
     "pinia": "^2.1.7",
     "quagga": "^0.12.1",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "vue-router": "^4.2.5"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^1.0.2",
     "@electron-toolkit/eslint-config-ts": "^1.0.1",
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@rushstack/eslint-patch": "^1.6.1",
-    "@types/node": "^18.19.5",
+    "@types/node": "^18.19.9",
     "@types/sqlite3": "^3.1.11",
     "@vitejs/plugin-vue": "^5.0.2",
     "@vue/eslint-config-prettier": "^9.0.0",
@@ -44,6 +52,7 @@
     "eslint-plugin-vue": "^9.19.2",
     "less": "^4.2.0",
     "prettier": "^3.1.1",
+    "sass": "^1.70.0",
     "typescript": "^5.3.3",
     "vite": "^5.0.11",
     "vue": "^3.4.5",
