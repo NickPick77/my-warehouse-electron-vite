@@ -1,40 +1,41 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { useItemsStore } from "../store/items/index";
+import { computed } from 'vue'
+import CheckBoxToggle from './CheckBoxToggle.vue'
+import { useItemsStore } from '../store/items/index'
 
-import { type ItemPayload } from "../types/items";
+import { type ItemPayload } from '../types/items'
 
 interface Props {
-  itemData: ItemPayload;
+  itemData: ItemPayload
 }
 
-const itemsStore = useItemsStore();
+const itemsStore = useItemsStore()
 
-const { itemData } = defineProps<Props>();
+const { itemData } = defineProps<Props>()
 
-const emit = defineEmits(["handleAllItemSelected"]);
+const emit = defineEmits(['handleAllItemSelected'])
 
 const setStatusWithQuantity = computed(() => {
-  const statusSpanDefaultClass = "item-row-container__quantity__status";
+  const statusSpanDefaultClass = 'item-row-container__quantity__status'
   if (Number(itemData.quantity) <= 3) {
-    return [statusSpanDefaultClass, `${statusSpanDefaultClass}--warning`];
+    return [statusSpanDefaultClass, `${statusSpanDefaultClass}--warning`]
   }
 
   if (Number(itemData.quantity) <= 5) {
-    return [statusSpanDefaultClass, `${statusSpanDefaultClass}--alert`];
+    return [statusSpanDefaultClass, `${statusSpanDefaultClass}--alert`]
   }
 
-  return [statusSpanDefaultClass];
-});
+  return [statusSpanDefaultClass]
+})
 
 const handleSelectItem = (id: number) => {
   if (!id) {
-    emit("handleAllItemSelected");
-    return;
+    emit('handleAllItemSelected')
+    return
   }
 
-  itemsStore.handleSelectItem(id);
-};
+  itemsStore.handleSelectItem(id)
+}
 </script>
 
 <template>
@@ -50,8 +51,8 @@ const handleSelectItem = (id: number) => {
     <div>{{ itemData.item_name }}</div>
     <div class="item-row-container__quantity">
       <span
-        :class="setStatusWithQuantity"
         v-if="Number(itemData.quantity) || itemData.quantity === 0"
+        :class="setStatusWithQuantity"
       />
       {{ itemData.quantity }}
     </div>
@@ -61,6 +62,8 @@ const handleSelectItem = (id: number) => {
 </template>
 
 <style lang="scss" scoped>
+@use '../assets/style/main.scss' as *;
+
 .item-row-container {
   display: grid;
   grid-template-columns: auto repeat(3, 1fr);

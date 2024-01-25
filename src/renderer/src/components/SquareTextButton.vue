@@ -1,21 +1,21 @@
 <script setup lang="ts">
-type Themes = "success" | "error";
+type Themes = 'success' | 'error'
 
 interface Props {
-  literal: string;
-  theme: Themes;
+  literal: string
+  theme: Themes
 }
 
 const { literal } = withDefaults(defineProps<Props>(), {
-  literal: "",
-  theme: "success",
-});
+  literal: '',
+  theme: 'success'
+})
 
-const emit = defineEmits(["handleClick"]);
+const emit = defineEmits(['handleClick'])
 
 const handleClick = () => {
-  emit("handleClick");
-};
+  emit('handleClick')
+}
 </script>
 
 <template>
@@ -24,8 +24,8 @@ const handleClick = () => {
       'square-btn',
       {
         'square-btn--success': theme === 'success',
-        'square-btn--error': theme === 'error',
-      },
+        'square-btn--error': theme === 'error'
+      }
     ]"
     @click="handleClick"
   >
@@ -34,6 +34,8 @@ const handleClick = () => {
 </template>
 
 <style lang="scss" scoped>
+@use '../assets/style/main.scss' as *;
+
 $error-color: rgb(255, 0, 0);
 $success-color: rgb(25, 184, 57);
 

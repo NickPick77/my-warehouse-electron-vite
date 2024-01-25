@@ -1,36 +1,37 @@
 <script setup lang="ts">
 export interface ProductFormPayload {
-  type: "save" | "clear";
+  type: 'save' | 'clear'
   formPayload: {
-    bar_code: string;
-    item_name: string;
-    quantity: number;
-  };
+    bar_code: string
+    item_name: string
+    quantity: number
+  }
 }
-import { useItemsStore } from "../store/items/index";
+import NewProductForm from '@renderer/components/NewProductForm.vue'
+import { useItemsStore } from '../store/items/index'
 
-const itemsStore = useItemsStore();
+const itemsStore = useItemsStore()
 
-const { closeProductWindow } = window.events;
+const { closeProductWindow } = window.events
 
 const handleOnCloseAddProduct = async () => {
-  await closeProductWindow();
-};
+  await closeProductWindow()
+}
 
 const handleOnSaveItem = async ($event: ProductFormPayload) => {
-  if ($event.type === "save") {
+  if ($event.type === 'save') {
     itemsStore.handleAddItem({
       isSelected: false,
-      ...$event.formPayload,
-    });
+      ...$event.formPayload
+    })
 
-    await handleOnCloseAddProduct();
+    await handleOnCloseAddProduct()
   }
 
-  if ($event.type === "clear") {
-    await handleOnCloseAddProduct();
+  if ($event.type === 'clear') {
+    await handleOnCloseAddProduct()
   }
-};
+}
 </script>
 
 <template>

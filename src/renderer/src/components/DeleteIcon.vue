@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref } from 'vue'
 
-const emit = defineEmits(["handleClick"]);
+const emit = defineEmits(['handleClick'])
 
 const handleClick = () => {
-  emit("handleClick");
-};
+  emit('handleClick')
+}
 
-const isHovered = ref<boolean>(false);
+const isHovered = ref<boolean>(false)
 </script>
 
 <template>
@@ -19,12 +19,14 @@ const isHovered = ref<boolean>(false);
   >
     <font-awesome-icon
       :class="[isHovered ? 'fa-beat' : '', 'fa-fw', 'fa-xs']"
-      icon="fa-solid fa-trash "
+      icon="fa-solid fa-trash"
     />
   </button>
 </template>
 
 <style lang="scss" scoped>
+@use '../assets/style/main.scss' as *;
+
 $error-color: rgb(255, 0, 0);
 
 .delete-icon {

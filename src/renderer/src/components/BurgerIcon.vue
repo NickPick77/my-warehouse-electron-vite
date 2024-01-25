@@ -1,15 +1,15 @@
 <script setup lang="ts">
 interface Props {
-  isMenuOpen: boolean;
+  isMenuOpen: boolean
 }
 
-const { isMenuOpen } = defineProps<Props>();
+const { isMenuOpen } = defineProps<Props>()
 
-const emit = defineEmits(["onMenuClickToggle"]);
+const emit = defineEmits(['onMenuClickToggle'])
 
 const onMenuClickToggle = () => {
-  emit("onMenuClickToggle");
-};
+  emit('onMenuClickToggle')
+}
 </script>
 
 <template>
@@ -18,24 +18,24 @@ const onMenuClickToggle = () => {
       :class="[
         'burger-icon__slice',
         {
-          'burger-icon__slice--active': isMenuOpen,
-        },
+          'burger-icon__slice--active': isMenuOpen
+        }
       ]"
     />
     <span
       :class="[
         'burger-icon__slice',
         {
-          'burger-icon__slice--active': isMenuOpen,
-        },
+          'burger-icon__slice--active': isMenuOpen
+        }
       ]"
     />
     <span
       :class="[
         'burger-icon__slice',
         {
-          'burger-icon__slice--active': isMenuOpen,
-        },
+          'burger-icon__slice--active': isMenuOpen
+        }
       ]"
     />
   </div>
@@ -59,8 +59,10 @@ const onMenuClickToggle = () => {
 
     transform-origin: 30% 50%;
 
-    transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1),
-      background 0.5s cubic-bezier(0.77, 0.2, 0.05, 1), opacity 0.55s ease;
+    transition:
+      transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1),
+      background 0.5s cubic-bezier(0.77, 0.2, 0.05, 1),
+      opacity 0.55s ease;
 
     &:first-child {
       transform-origin: 0% 0%;

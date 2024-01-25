@@ -1,27 +1,23 @@
 <script setup lang="ts">
-type Themes = "add" | "close";
+type Themes = 'add' | 'close'
 
 interface Props {
-  theme: Themes;
+  theme: Themes
 }
 
 const { theme } = withDefaults(defineProps<Props>(), {
-  theme: "add",
-});
+  theme: 'add'
+})
 
-const emit = defineEmits(["handleClick"]);
+const emit = defineEmits(['handleClick'])
 
 const handleClick = () => {
-  emit("handleClick");
-};
+  emit('handleClick')
+}
 </script>
 
 <template>
-  <button
-    v-if="theme === 'close'"
-    class="close-btn"
-    @click.prevent="handleClick"
-  >
+  <button v-if="theme === 'close'" class="close-btn" @click.prevent="handleClick">
     <div class="close-btn__line-one" />
     <div class="close-btn__line-two" />
   </button>
@@ -32,6 +28,8 @@ const handleClick = () => {
 </template>
 
 <style lang="scss" scoped>
+@use '../assets/style/main.scss' as *;
+
 $error-color: rgb(255, 0, 0);
 $success-color: rgb(25, 184, 57);
 

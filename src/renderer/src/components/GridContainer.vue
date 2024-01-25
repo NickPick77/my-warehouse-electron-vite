@@ -1,19 +1,24 @@
 <script setup lang="ts">
-import { useItemsStore } from "../store/items/index";
+import GridHeading from './GridHeading.vue'
+import ItemRow from './ItemRow.vue'
 
-const itemsStore = useItemsStore();
+import { useItemsStore } from '../store/items/index'
+
+const itemsStore = useItemsStore()
 </script>
 
 <template>
   <div class="grid">
     <GridHeading class="grid__heading" />
-    <div v-for="item in itemsStore.getItems" class="grid__item">
+    <div v-for="item in itemsStore.getItems" :key="item.id" class="grid__item">
       <ItemRow :item-data="item" />
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+@use '../assets/style/main.scss' as *;
+
 .grid {
   @include windowContainerBoxShadow;
 

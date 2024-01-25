@@ -1,63 +1,65 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import type { QuaggaImageObject } from "../types/quagga";
+import { ref, onMounted } from 'vue'
+import RoundCrossButton from './RoundCrossButton.vue'
+import SquareTextButton from './SquareTextButton.vue'
+import type { QuaggaImageObject } from '../types/quagga'
 
-const { openWebCamModal, barCodeSuccess } = window.events;
+const { openWebCamModal, barCodeSuccess } = window.events
 
-const productName = ref<string>("");
-const barCode = ref<string>("");
-const quantity = ref<number>(0);
-const isScanning = ref<boolean>(false);
+const productName = ref<string>('')
+const barCode = ref<string>('')
+const quantity = ref<number>(0)
+const isScanning = ref<boolean>(false)
 
-const emit = defineEmits(["handleClickOnCloseWindow", "handleClick"]);
+const emit = defineEmits(['handleClickOnCloseWindow', 'handleClick'])
 
 const handleCloseClick = () => {
-  emit("handleClickOnCloseWindow");
-};
+  emit('handleClickOnCloseWindow')
+}
 
 const handleClick = (type: string) => {
-  let formPayload = {};
+  let formPayload = {}
 
-  if (type === "save") {
+  if (type === 'save') {
     formPayload = {
       bar_code: barCode.value,
       item_name: productName.value,
-      quantity: quantity.value,
-    };
+      quantity: quantity.value
+    }
   }
-  emit("handleClick", { type, formPayload });
+  emit('handleClick', { type, formPayload })
 
-  productName.value = "";
-  barCode.value = "";
-  quantity.value = 0;
-};
+  productName.value = ''
+  barCode.value = ''
+  quantity.value = 0
+}
 
 const startScanning = async () => {
   if (!isScanning.value) {
-    isScanning.value = true;
+    isScanning.value = true
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      console.error("Fotocamera non disponibile");
-      isScanning.value = false;
-      return;
+      console.error('Fotocamera non disponibile')
+      isScanning.value = false
+      return
     }
 
     try {
-      await openWebCamModal();
+      await openWebCamModal()
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-    isScanning.value = false;
+    isScanning.value = false
   }
-};
+}
 
 onMounted(async () => {
-  await barCodeSuccess((_: any, quaggaPayload: QuaggaImageObject) => {
-    console.log("codice a barre acquisito", quaggaPayload);
+  await barCodeSuccess((_, quaggaPayload: QuaggaImageObject) => {
+    console.log('codice a barre acquisito', quaggaPayload)
 
-    barCode.value = quaggaPayload.codeResult.code;
-  });
-});
+    barCode.value = quaggaPayload.codeResult.code
+  })
+})
 </script>
 
 <template>
@@ -76,10 +78,10 @@ onMounted(async () => {
           <button @click.prevent="startScanning">Apri Webcam</button>
         </div>
         <input
-          type="text"
-          name="bar-code"
           id="bar-code"
           v-model="barCode"
+          type="text"
+          name="bar-code"
           placeholder="Scansiona..."
           required
         />
@@ -87,23 +89,17 @@ onMounted(async () => {
       <div class="container__form__input-container">
         <label for="item-name">Nome prodotto</label>
         <input
-          type="text"
-          name="item-name"
           id="item-name"
           v-model="productName"
+          type="text"
+          name="item-name"
           placeholder="Il mio prodotto"
           required
         />
       </div>
       <div class="container__form__input-container">
         <label for="quantity">Quantità</label>
-        <input
-          type="number"
-          name="quantity"
-          id="quantity"
-          v-model="quantity"
-          placeholder="0"
-        />
+        <input id="quantity" v-model="quantity" type="number" name="quantity" placeholder="0" />
       </div>
       <!-- <div class="container__form__input-container">
         <label for="img-url">Immagine prodotto</label>
@@ -127,6 +123,8 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
+@use '../assets/style/main.scss' as *;
+
 .container {
   @include windowContainerBoxShadow;
 
@@ -164,7 +162,8 @@ onMounted(async () => {
         line-height: 1;
         border: 1px solid rgba(0, 0, 0, 0.01);
         border-radius: 16px;
-        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+        box-shadow:
+          rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
           rgba(60, 64, 67, 0.15) 0px -1px 2px 0px;
 
         &:focus {

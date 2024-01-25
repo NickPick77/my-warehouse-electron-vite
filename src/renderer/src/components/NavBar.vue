@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref } from 'vue'
 
-const isMenuOpen = ref(false);
+import BurgerIcon from './BurgerIcon.vue'
+import MobileMenu from './MobileMenu.vue'
+
+const isMenuOpen = ref(false)
 
 const onMenuClickToggle = () => {
-  isMenuOpen.value = !isMenuOpen.value;
-};
+  isMenuOpen.value = !isMenuOpen.value
+}
 </script>
 
 <template>
@@ -13,13 +16,14 @@ const onMenuClickToggle = () => {
     <BurgerIcon
       class="nav-bar__burger-icon"
       :is-menu-open="isMenuOpen"
-      @onMenuClickToggle="onMenuClickToggle"
+      @on-menu-click-toggle="onMenuClickToggle"
     />
     <MobileMenu :is-menu-open="isMenuOpen" />
   </nav>
 </template>
 
 <style lang="scss" scoped>
+@use '../assets/style/main.scss' as *;
 .nav-bar {
   @include windowContainerBoxShadow;
 

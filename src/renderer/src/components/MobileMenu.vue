@@ -1,9 +1,9 @@
 <script setup lang="ts">
 interface Props {
-  isMenuOpen: boolean;
+  isMenuOpen: boolean
 }
 
-const { isMenuOpen } = defineProps<Props>();
+const { isMenuOpen } = defineProps<Props>()
 </script>
 
 <template>
@@ -11,23 +11,25 @@ const { isMenuOpen } = defineProps<Props>();
     :class="[
       'mobile-menu',
       {
-        'mobile-menu--active': isMenuOpen,
-      },
+        'mobile-menu--active': isMenuOpen
+      }
     ]"
   >
     <li class="mobile-menu__item">
-      <nuxt-link to="/">Prodotti</nuxt-link>
+      <router-link to="/">Prodotti</router-link>
     </li>
     <li class="mobile-menu__item">
-      <nuxt-link to="/">Su di noi</nuxt-link>
+      <router-link to="/">Su di noi</router-link>
     </li>
     <li class="mobile-menu__item">
-      <nuxt-link to="/">Contatti</nuxt-link>
+      <router-link to="/">Contatti</router-link>
     </li>
   </ul>
 </template>
 
 <style lang="scss" scoped>
+@use '../assets/style/main.scss' as *;
+
 .mobile-menu {
   @include windowContainerBoxShadow;
 
@@ -46,7 +48,8 @@ const { isMenuOpen } = defineProps<Props>();
   border-bottom-left-radius: 16px;
   transform-origin: 0% 0%;
   transform: translateX(100%);
-  transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1),
+  transition:
+    transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1),
     background-color 0.4s cubic-bezier(0.8, 0.4, 0.3, 1.25);
 
   &--active {

@@ -1,31 +1,28 @@
 <script setup lang="ts">
 interface Props {
-  isSelected: boolean;
+  isSelected: boolean
 }
 
-const { isSelected } = defineProps<Props>();
+const { isSelected } = defineProps<Props>()
 
-const emit = defineEmits(["handleCheck"]);
+const emit = defineEmits(['handleCheck'])
 
 const handleClick = () => {
-  emit("handleCheck");
-};
+  emit('handleCheck')
+}
 </script>
 
 <template>
   <div class="check-box" @click="handleClick">
-    <div
-      :class="[
-        'check-box__toggle',
-        { 'check-box__toggle--selected': isSelected },
-      ]"
-    >
+    <div :class="['check-box__toggle', { 'check-box__toggle--selected': isSelected }]">
       <span></span>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+@use '../assets/style/main.scss' as *;
+
 .check-box {
   &__toggle {
     position: relative;
@@ -37,7 +34,7 @@ const handleClick = () => {
     transform: translate3d(0, 0, 0);
 
     &::before {
-      content: "";
+      content: '';
       position: relative;
       top: 3px;
       left: 3px;
@@ -62,7 +59,7 @@ const handleClick = () => {
       transition: all 0.2s ease;
 
       &::before {
-        content: "";
+        content: '';
         position: absolute;
         display: block;
         margin: -18px;
@@ -86,7 +83,8 @@ const handleClick = () => {
       & span {
         background: #4f2edc;
         transform: translateX(20px);
-        transition: all 0.2s cubic-bezier(0.8, 0.4, 0.3, 1.25),
+        transition:
+          all 0.2s cubic-bezier(0.8, 0.4, 0.3, 1.25),
           background 0.15s ease;
         box-shadow: 0 3px 8px rgba(79, 46, 220, 0.2);
 
