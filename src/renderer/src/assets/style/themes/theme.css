@@ -1,0 +1,47 @@
+/*
+Color Palette
+*/
+
+:root {
+    /* Design tokens */
+  
+    /* Primary */
+    --mw-primary: rgba(22, 126, 222, 0.7);
+  
+    /* Secondary */
+    --mw-secondary: 27, 17, 92;
+  
+    /* Tertiary */
+    --mw-tertiary: 112, 203, 244;
+  
+    /* Neutral */
+    --mw-neutral-0: rgb(255, 255, 255);
+    --mw-neutral: 27, 17, 92;
+    --mw-neutral-10: 246, 246, 252;
+    --mw-neutral-20: 209, 207, 222;
+    --mw-neutral-40: 164, 160, 190;
+    --mw-neutral-60: 118, 112, 157;
+    --mw-neutral-100: rgb(0, 0, 0);
+    --mw-neutral-120: 6, 2, 34;
+  
+    /* Error */
+    --mw-error: rgb(255, 0, 0);
+    --mw-error-40: 251, 231, 231;
+    --mw-error-60: 229, 110, 114;
+  
+    /* Success */
+    --mw-success: rgb(25, 184, 57);
+  
+    /* Alert */
+    --mw-alert: rgb(243, 147, 0);
+    --mw-alert-40: 255, 239, 189;
+    --mw-alert-60: 243, 203, 71;
+  
+    /* Lines - Dividers - Borders */
+    --mw-line-40: 226, 226, 226;
+  
+    /* Fonts */
+    /* --mw-font-primary: "Ambit", "Roboto", "Helvetica", "Arial", sans-serif;
+    --mw-font-secondary: "TUITypeLt", "Roboto", "Helvetica", "Arial", sans-serif; */
+  }
+  

@@ -1,0 +1,13 @@
+@use "sass:map";
+
+$font-weights: (
+  "light": 100,
+  "regular": 400,
+  "bold": 900,
+);
+
+@mixin robotoFont($size, $weight) {
+  font-family: "Roboto", sans-serif;
+  font-size: $size;
+  font-weight: map.get($font-weights, $weight);
+}
