@@ -34,7 +34,7 @@ const handleClick = () => {
 </template>
 
 <style lang="scss" scoped>
-@use '../assets/style/main.scss' as *;
+@use '@renderer/assets/style/main.scss' as *;
 
 $error-color: rgb(255, 0, 0);
 $success-color: rgb(25, 184, 57);
@@ -56,7 +56,7 @@ $success-color: rgb(25, 184, 57);
 
     &:hover {
       background-color: darken($success-color, 10%);
-      transition: all 0.5s;
+      transition: all 0.5s ease-in-out;
     }
   }
 

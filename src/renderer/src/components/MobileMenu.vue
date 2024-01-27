@@ -15,20 +15,20 @@ const { isMenuOpen } = defineProps<Props>()
       }
     ]"
   >
-    <li class="mobile-menu__item">
-      <router-link to="/">Prodotti</router-link>
-    </li>
-    <li class="mobile-menu__item">
-      <router-link to="/">Su di noi</router-link>
-    </li>
-    <li class="mobile-menu__item">
-      <router-link to="/">Contatti</router-link>
-    </li>
+    <router-link class="mobile-menu__item" to="/">
+      <li>Prodotti</li>
+    </router-link>
+    <!-- <router-link class="mobile-menu__item" to="/">
+      <li>Su di noi</li>
+    </router-link> -->
+    <router-link class="mobile-menu__item" to="/settings">
+      <li>Impostazioni</li>
+    </router-link>
   </ul>
 </template>
 
 <style lang="scss" scoped>
-@use '../assets/style/main.scss' as *;
+@use '@renderer/assets/style/main.scss' as *;
 
 .mobile-menu {
   @include windowContainerBoxShadow;
@@ -57,19 +57,19 @@ const { isMenuOpen } = defineProps<Props>()
   }
 
   &__item {
-    list-style: none;
     padding: 2%;
     width: 100%;
     text-align: center;
+    color: white;
+    text-decoration: none;
     transition: background-color 0.4s ease-out;
 
     &:hover {
       background-color: rgb(22, 119, 222);
     }
 
-    a {
-      color: white;
-      text-decoration: none;
+    & li {
+      list-style: none;
     }
   }
 }

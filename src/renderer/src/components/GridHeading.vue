@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import ItemRow from './ItemRow.vue'
-import { useItemsStore } from '../store/items/index'
+import ItemRow from '@components/ItemRow.vue'
+import { useItemsStore } from '@renderer/store/items/index'
 
 const itemsStore = useItemsStore()
 

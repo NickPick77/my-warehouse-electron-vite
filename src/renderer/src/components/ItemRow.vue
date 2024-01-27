@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import CheckBoxToggle from './CheckBoxToggle.vue'
-import { useItemsStore } from '../store/items/index'
+import { computed, ref } from 'vue'
 
-import { type ItemPayload } from '../types/items'
+import CheckBoxToggle from '@components/CheckBoxToggle.vue'
+import RoundIconButton from '@components/RoundIconButton.vue'
+
+import { useItemsStore } from '@renderer/store/items/index'
+
+import { type ItemPayload } from '@renderer/types/items'
 
 interface Props {
   itemData: ItemPayload
@@ -14,6 +17,8 @@ const itemsStore = useItemsStore()
 const { itemData } = defineProps<Props>()
 
 const emit = defineEmits(['handleAllItemSelected'])
+
+const isHovered = ref<boolean>(false)
 
 const setStatusWithQuantity = computed(() => {
   const statusSpanDefaultClass = 'item-row-container__quantity__status'
@@ -58,16 +63,25 @@ const handleSelectItem = (id: number) => {
     </div>
     <div v-if="itemData.bar_code">{{ itemData.bar_code }}</div>
     <div v-else>{{ itemData.bar_code_title }}</div>
+    <RoundIconButton
+      v-if="itemData.bar_code"
+      class="item-row-container__utils-btn__change-icon"
+      @mouseover="isHovered = true"
+      @mouseleave="isHovered = false"
+    >
+      <font-awesome-icon icon="fa-solid fa-wrench" class="utils-btn__wrapper__icon" />
+    </RoundIconButton>
   </div>
 </template>
 
 <style lang="scss" scoped>
-@use '../assets/style/main.scss' as *;
+@use '@renderer/assets/style/main.scss' as *;
 
 .item-row-container {
   display: grid;
-  grid-template-columns: auto repeat(3, 1fr);
+  grid-template-columns: auto repeat(3, 1fr) 5%;
   grid-template-rows: 50px;
+  align-items: center;
 
   &__quantity,
   div {
@@ -99,6 +113,17 @@ const handleSelectItem = (id: number) => {
     height: 100%;
     object-fit: cover;
     margin: 0 auto;
+  }
+
+  &__utils-btn {
+    &__change-icon {
+      &:hover {
+        & > svg {
+          transform: scale(1.2);
+          transition: transform 0.5s ease-in-out;
+        }
+      }
+    }
   }
 }
 </style>

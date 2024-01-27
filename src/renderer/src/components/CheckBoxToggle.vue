@@ -21,7 +21,7 @@ const handleClick = () => {
 </template>
 
 <style lang="scss" scoped>
-@use '../assets/style/main.scss' as *;
+@use '@renderer/assets/style/main.scss' as *;
 
 .check-box {
   &__toggle {

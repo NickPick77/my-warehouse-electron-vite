@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import RoundCrossButton from './RoundCrossButton.vue'
-import SquareTextButton from './SquareTextButton.vue'
-import type { QuaggaImageObject } from '../types/quagga'
+import RoundCrossButton from '@components/RoundCrossButton.vue'
+import SquareTextButton from '@components/SquareTextButton.vue'
+import type { QuaggaImageObject } from '@renderer/types/quagga'
 
 const { openWebCamModal, barCodeSuccess } = window.events
 
@@ -54,7 +54,7 @@ const startScanning = async () => {
 }
 
 onMounted(async () => {
-  await barCodeSuccess((_, quaggaPayload: QuaggaImageObject) => {
+  await barCodeSuccess((_: string, quaggaPayload: QuaggaImageObject) => {
     console.log('codice a barre acquisito', quaggaPayload)
 
     barCode.value = quaggaPayload.codeResult.code
@@ -74,17 +74,22 @@ onMounted(async () => {
     >
       <div class="container__form__input-container">
         <label for="bar-code">Codice a barre</label>
-        <div>
-          <button @click.prevent="startScanning">Apri Webcam</button>
+        <div class="container__form__input-container__bar-code">
+          <button
+            class="container__form__input-container__bar-code__cam-scan-cta"
+            @click.prevent="startScanning"
+          >
+            Apri Webcam
+          </button>
+          <input
+            id="bar-code"
+            v-model="barCode"
+            type="text"
+            name="bar-code"
+            placeholder="Scansiona..."
+            required
+          />
         </div>
-        <input
-          id="bar-code"
-          v-model="barCode"
-          type="text"
-          name="bar-code"
-          placeholder="Scansiona..."
-          required
-        />
       </div>
       <div class="container__form__input-container">
         <label for="item-name">Nome prodotto</label>
@@ -123,11 +128,10 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-@use '../assets/style/main.scss' as *;
+@use '@renderer/assets/style/main.scss' as *;
 
+$background-color: rgba(22, 126, 222, 0.7);
 .container {
-  @include windowContainerBoxShadow;
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -146,18 +150,25 @@ onMounted(async () => {
   }
 
   &__form {
+    @include windowContainerBoxShadow;
+
     display: flex;
     flex-direction: column;
     align-items: center;
     align-content: center;
-    gap: 6px;
+    gap: 30px;
+    background-color: white;
+    padding: 10%;
+    margin: 10%;
+    border-radius: 16px;
 
     &__input-container {
       display: grid;
       align-items: center;
-      grid-template-rows: repeat(2, 1fr);
+      gap: 10px;
+      grid-template-rows: repeat(2, auto);
 
-      & > input {
+      & input {
         padding: 0.5em 0.8em;
         line-height: 1;
         border: 1px solid rgba(0, 0, 0, 0.01);
@@ -169,6 +180,29 @@ onMounted(async () => {
         &:focus {
           outline: 1px dashed rgba(22, 126, 222, 0.7);
           outline-offset: 0.2em;
+        }
+      }
+
+      &__bar-code {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        &__cam-scan-cta {
+          @include roundButtonBoxShadow;
+          @include robotoFont(1em, light);
+
+          padding: 4% 12%;
+          border-radius: 16px;
+          border: none;
+          background-color: var(--mw-primary);
+          color: white;
+          transition: background-color 0.5s ease-in-out;
+          cursor: pointer;
+
+          &:hover {
+            background-color: darken($background-color, 10%);
+          }
         }
       }
     }

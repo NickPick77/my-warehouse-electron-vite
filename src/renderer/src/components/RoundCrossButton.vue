@@ -28,7 +28,7 @@ const handleClick = () => {
 </template>
 
 <style lang="scss" scoped>
-@use '../assets/style/main.scss' as *;
+@use '@renderer/assets/style/main.scss' as *;
 
 $error-color: rgb(255, 0, 0);
 $success-color: rgb(25, 184, 57);
@@ -45,6 +45,7 @@ $success-color: rgb(25, 184, 57);
   margin-right: 10px;
   transition: all 0.2s;
   -webkit-app-region: no-drag;
+  transition: background-color 0.5s ease-in-out;
   cursor: pointer;
 
   &:hover {
@@ -60,11 +61,10 @@ $success-color: rgb(25, 184, 57);
     width: 1px;
     border-radius: 2px;
     background-color: darken(rgb(0, 0, 0), 20%);
-    transition: all 0.5s;
+    transition: transform 0.5s ease-in-out;
 
     &__hover {
       transform: scale(1.01);
-      transition: all 0.5s;
     }
   }
 
@@ -87,11 +87,11 @@ $success-color: rgb(25, 184, 57);
   border: none;
   background-color: var(--mw-success);
   -webkit-app-region: no-drag;
+  transition: background-color 0.5s ease-in-out;
   cursor: pointer;
 
   &:hover {
     background-color: darken($success-color, 10%);
-    transition: all 0.5s;
   }
 
   &__line-one {

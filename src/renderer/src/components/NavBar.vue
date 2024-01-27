@@ -1,10 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
-import BurgerIcon from './BurgerIcon.vue'
-import MobileMenu from './MobileMenu.vue'
+const route = useRoute()
+
+import BurgerIcon from '@components/BurgerIcon.vue'
+import MobileMenu from '@components/MobileMenu.vue'
 
 const isMenuOpen = ref(false)
+
+watch(route, () => {
+  onMenuClickToggle()
+})
 
 const onMenuClickToggle = () => {
   isMenuOpen.value = !isMenuOpen.value
@@ -23,7 +30,7 @@ const onMenuClickToggle = () => {
 </template>
 
 <style lang="scss" scoped>
-@use '../assets/style/main.scss' as *;
+@use '@renderer/assets/style/main.scss' as *;
 .nav-bar {
   @include windowContainerBoxShadow;
 

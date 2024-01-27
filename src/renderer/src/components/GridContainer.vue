@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import GridHeading from './GridHeading.vue'
-import ItemRow from './ItemRow.vue'
+import GridHeading from '@components/GridHeading.vue'
+import ItemRow from '@components/ItemRow.vue'
 
-import { useItemsStore } from '../store/items/index'
+import { useItemsStore } from '@renderer/store/items/index'
 
 const itemsStore = useItemsStore()
 </script>
@@ -17,22 +17,21 @@ const itemsStore = useItemsStore()
 </template>
 
 <style lang="scss" scoped>
-@use '../assets/style/main.scss' as *;
+@use '@renderer/assets/style/main.scss' as *;
 
 .grid {
   @include windowContainerBoxShadow;
 
-  display: grid;
-  align-items: center;
-  align-content: center;
-  gap: 5px;
+  min-height: 50vh;
   margin: 0 20px 40px;
   padding: 20px;
   border: 1px solid rgba(0, 0, 0, 0.01);
   border-radius: 16px;
+  background-color: white;
 
   &__heading {
     padding: 5px;
+    margin-bottom: 8px;
   }
 
   &__item {
@@ -41,6 +40,7 @@ const itemsStore = useItemsStore()
     padding: 5px;
     border: 1px solid rgba(0, 0, 0, 0.01);
     border-radius: 16px;
+    margin-bottom: 8px;
     transition: background-color 0.4s cubic-bezier(0.8, 0.4, 0.3, 1.25);
     cursor: pointer;
 
