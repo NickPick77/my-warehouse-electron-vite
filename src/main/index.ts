@@ -1,185 +1,34 @@
 'use strict'
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow } from 'electron'
+import { electronApp, is, optimizer } from '@electron-toolkit/utils'
+
+import createMainWindow from './mainWindow'
+
+import createDb from './databaseHandlers'
 import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-// import icon from '../../resources/icon.png?asset'
-import { Database } from 'sqlite3'
+
+import ipcMainHandlers from './ipcMainHandlers'
+
 import { type Database as DatabaseType } from 'sqlite3'
-import { ItemPayload } from '../renderer/src/types/items'
 
 process.env.ROOT = join(__dirname, '..')
-process.env.ELECTRON = join(process.env.ROOT, 'electron')
-process.env.DIST = join(process.env.ROOT, 'dist-electron')
-process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
-  ? join(process.env.ROOT, 'public')
-  : join(process.env.ROOT, '.output/public')
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
+
+const appPath = app.getAppPath().replace('app.asar', 'items.sqlite')
+const devPath = join(app.getAppPath(), 'items.db')
+
+const dbPath = is.dev ? devPath : appPath
 
 let mainWindow: BrowserWindow | null
 let productWindow: BrowserWindow | null
 let cameraWindow: BrowserWindow | null
 
-let db: DatabaseType
+// SQLite3 Database Initializiation
+const db: DatabaseType = createDb(dbPath)
+
+// Preload and Icon path definition
 const preload = join(process.env.ROOT, 'preload/index.js')
 const icon = join(process.env.ROOT, 'resources/warehouse.png')
-
-const configureWindow = (window, hash = '') => {
-  window.webContents.on('did-finish-load', (callback) => {
-    if (typeof callback === 'function') {
-      callback()
-    }
-  })
-  console.log(join(app.getAppPath(), 'items.db'))
-  console.log(app.getAppPath())
-
-  if (hash === '') {
-    window.maximize()
-  }
-
-  if (hash === '#WebCamModal') {
-    window.setTitle('My Warehose - Bar Code WebCam Scanner')
-  }
-
-  window.on('ready-to-show', () => {
-    window.show()
-  })
-
-  window.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
-    return { action: 'deny' }
-  })
-
-  console.log(process.env['ELECTRON_RENDERER_URL'])
-  console.log('production load file', join(__dirname, `../renderer/index.html${hash}`))
-
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    window.loadURL(`${process.env['ELECTRON_RENDERER_URL']}${hash}`)
-    window.webContents.openDevTools()
-
-    // if (hash !== '#WebCamModal') {
-    //   window.webContents.openDevTools()
-    // }
-  } else {
-    window.loadFile(join(__dirname, `../renderer/index.html${hash}`))
-  }
-
-  // if (is.dev && process.env.VITE_DEV_SERVER_URL) {
-  //   window.loadURL(`${process.env.VITE_DEV_SERVER_URL}${hash}`)
-  //   if (hash !== '#WebCamModal') {
-  //     window.webContents.openDevTools()
-  //   }
-  // } else {
-  //   window.loadFile(join(process.env.VITE_PUBLIC as string, `index.html${hash}`))
-  //   window.webContents.openDevTools()
-  // }
-
-  if (hash === '#WebCamModal') {
-    window.setTitle('My Warehose - Bar Code WebCam Scanner')
-  }
-}
-
-const createMainWindow = () => {
-  mainWindow = new BrowserWindow({
-    icon,
-    autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
-    webPreferences: {
-      preload,
-      nodeIntegrationInWorker: true,
-      contextIsolation: true,
-      webSecurity: false,
-      sandbox: false
-    }
-  })
-
-  // join(app.getAppPath(), 'items.db')
-
-  const appPath = app.getAppPath().replace('app.asar', 'items.sqlite')
-
-  const dbPath = appPath
-  db = new Database(dbPath)
-  db.run(`
-    CREATE TABLE IF NOT EXISTS items (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      isSelected INTEGER NOT NULL,
-      bar_code TEXT,
-      item_name TEXT NOT NULL,
-      quantity INTEGER
-    )
-  `)
-
-  configureWindow(mainWindow)
-
-  mainWindow.on('close', function () {
-    mainWindow = null
-    productWindow = null
-  })
-
-  mainWindow.on('closed', function () {
-    mainWindow = null
-    productWindow = null
-  })
-}
-const createAddProductWindow = () => {
-  if (productWindow && !productWindow.isDestroyed()) {
-    productWindow.focus()
-    return
-  }
-  productWindow = new BrowserWindow({
-    width: 430,
-    height: 600,
-    frame: false,
-    icon,
-    webPreferences: {
-      preload,
-      nodeIntegrationInWorker: true,
-      contextIsolation: true,
-      webSecurity: false
-    }
-  })
-
-  configureWindow(productWindow, '#newProduct')
-
-  productWindow.on('close', () => {
-    productWindow = null
-  })
-
-  productWindow.on('closed', () => {
-    productWindow = null
-  })
-}
-
-const createWebCamWindow = () => {
-  if (cameraWindow && !cameraWindow.isDestroyed()) {
-    cameraWindow.focus()
-    return
-  }
-
-  cameraWindow = new BrowserWindow({
-    width: 620,
-    height: 420,
-    frame: true,
-    icon,
-    webPreferences: {
-      preload,
-      nodeIntegrationInWorker: true,
-      contextIsolation: true,
-      webSecurity: false
-    }
-  })
-
-  configureWindow(cameraWindow, '#WebCamModal')
-
-  cameraWindow.on('close', () => {
-    cameraWindow = null
-  })
-
-  cameraWindow.on('closed', () => {
-    cameraWindow = null
-  })
-}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -195,112 +44,61 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  createMainWindow()
+  mainWindow = createMainWindow(preload, icon)
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createMainWindow()
+    if (BrowserWindow.getAllWindows().length === 0) mainWindow = createMainWindow(preload, icon)
   })
 
-  // Ipc Main Handlers
-  ipcMain.handle('newProductWindow', () => {
-    createAddProductWindow()
-  })
+  // // Ipc Main Handlers
+  ipcMainHandlers(
+    preload,
+    {
+      icon,
+      db
+    },
+    { mainWindow, productWindow, cameraWindow }
+  )
 
-  ipcMain.handle('closeProductWindow', () => {
+  // Listeners for Main Window closing events
+  mainWindow.on('close', function () {
     productWindow?.close()
+    cameraWindow?.close()
+    mainWindow = null
+    productWindow = null
+    cameraWindow = null
   })
 
-  ipcMain.handle('getAllItems', async () => {
-    try {
-      const items: ItemPayload[] = await new Promise((resolve, reject) => {
-        db.all(
-          'SELECT id, isSelected, bar_code, item_name, quantity FROM items',
-          (err, items: ItemPayload[]) => {
-            if (err) {
-              reject({ success: false, error: err.message })
-            } else {
-              resolve(items)
-            }
-          }
-        )
-      })
-      const parsedItems = items.map((item) => ({
-        ...item,
-        isSelected: Boolean(item.isSelected)
-      }))
-      return { success: true, items: parsedItems }
-    } catch (error) {
-      console.error('Error retrieving items:', error)
-      return { success: false, error: (error as Error).message }
-    }
+  mainWindow.on('closed', function () {
+    productWindow?.close()
+    cameraWindow?.close()
+    mainWindow = null
+    productWindow = null
+    cameraWindow = null
   })
 
-  ipcMain.handle('addItem', (_, itemDetails) => {
-    const { isSelected, bar_code, item_name, quantity } = itemDetails
-    db.run(
-      `
-    INSERT INTO items (isSelected, bar_code, item_name, quantity)
-    VALUES (?, ?, ?, ?)
-  `,
-      [isSelected, bar_code, item_name, quantity],
-      (err) => {
-        if (err) {
-          console.log('product-added', { success: false, error: err.message })
-        } else {
-          console.log('product-added', { success: true })
-        }
-      }
-    )
-    mainWindow?.webContents.send('addItemSuccess')
+  // Listeners for Add Product Window closing events
+  productWindow?.on('close', () => {
+    cameraWindow?.close()
+    productWindow = null
+    cameraWindow = null
   })
 
-  ipcMain.handle('removeAllItems', () => {
-    db.run('DELETE FROM items', (err) => {
-      if (err) {
-        console.log('items-removed', { success: false, error: err.message })
-      } else {
-        console.log('items-removed', { success: true })
-      }
-    })
+  productWindow?.on('closed', () => {
+    cameraWindow?.close()
+    productWindow = null
+    cameraWindow = null
   })
 
-  ipcMain.handle('removeItem', (_, itemId) => {
-    db.run('DELETE FROM items WHERE id = ?', [itemId], (err) => {
-      if (err) {
-        console.log('item-removed', { success: false, error: err.message })
-      } else {
-        console.log('item-removed', { success: true })
-      }
-    })
+  // Listeners for Camera Window closing events
+  cameraWindow?.on('close', () => {
+    cameraWindow = null
   })
 
-  ipcMain.handle('removeSelectedItems', (_, itemIds) => {
-    db.serialize(() => {
-      const stmt = db.prepare('DELETE FROM items WHERE id = ?')
-      itemIds.forEach((id) => {
-        stmt.run(id, (err) => {
-          if (err) {
-            console.log('item-removed', { success: false, error: err.message })
-          } else {
-            console.log('item-removed', { success: true })
-          }
-        })
-      })
-      stmt.finalize()
-    })
-  })
-
-  ipcMain.handle('openWebCamModal', () => {
-    createWebCamWindow()
-  })
-
-  ipcMain.handle('barCodeDetected', (_, quaggaPayload) => {
-    productWindow?.webContents.send('barCodeSuccess', quaggaPayload)
-    if (cameraWindow) {
-      cameraWindow.close()
-    }
+  cameraWindow?.on('closed', () => {
+    cameraWindow = null
   })
 })
 
@@ -312,6 +110,3 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
-
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.
