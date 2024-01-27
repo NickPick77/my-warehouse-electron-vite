@@ -12,6 +12,8 @@ interface Props {
   itemData: ItemPayload
 }
 
+const { newProductWindowWithItem } = window.events
+
 const itemsStore = useItemsStore()
 
 const { itemData } = defineProps<Props>()
@@ -33,13 +35,17 @@ const setStatusWithQuantity = computed(() => {
   return [statusSpanDefaultClass]
 })
 
-const handleSelectItem = (id: number) => {
+const handleSelectItem = async (id: number) => {
   if (!id) {
     emit('handleAllItemSelected')
     return
   }
 
-  itemsStore.handleSelectItem(id)
+  await itemsStore.handleSelectItem(id)
+}
+
+const handleChangeItem = async (id: number) => {
+  await newProductWindowWithItem(id)
 }
 </script>
 
@@ -68,6 +74,7 @@ const handleSelectItem = (id: number) => {
       class="item-row-container__utils-btn__change-icon"
       @mouseover="isHovered = true"
       @mouseleave="isHovered = false"
+      @handle-click="handleChangeItem(Number(itemData.id))"
     >
       <font-awesome-icon icon="fa-solid fa-wrench" class="utils-btn__wrapper__icon" />
     </RoundIconButton>

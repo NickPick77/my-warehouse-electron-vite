@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+
 import RoundCrossButton from '@components/RoundCrossButton.vue'
 import SquareTextButton from '@components/SquareTextButton.vue'
+import { useItemsStore } from '@renderer/store/items'
+
 import type { QuaggaImageObject } from '@renderer/types/quagga'
+import { type IpcRendererEvent } from 'electron'
 
 const { openWebCamModal, barCodeSuccess } = window.events
 
-const productName = ref<string>('')
-const barCode = ref<string>('')
-const quantity = ref<number>(0)
+const itemsStore = useItemsStore()
+
+const productName = ref<string>(itemsStore.getFormPayload.item_name)
+const barCode = ref<string>(itemsStore.getFormPayload.bar_code)
+const quantityNum = ref<number>(itemsStore.getFormPayload.quantity)
 const isScanning = ref<boolean>(false)
 
 const emit = defineEmits(['handleClickOnCloseWindow', 'handleClick'])
@@ -22,16 +28,18 @@ const handleClick = (type: string) => {
 
   if (type === 'save') {
     formPayload = {
+      id: itemsStore.getFormPayload.id,
       bar_code: barCode.value,
       item_name: productName.value,
-      quantity: quantity.value
+      quantity: quantityNum.value,
+      fromChange: itemsStore.getFormPayload.fromChange
     }
   }
   emit('handleClick', { type, formPayload })
 
   productName.value = ''
   barCode.value = ''
-  quantity.value = 0
+  quantityNum.value = 0
 }
 
 const startScanning = async () => {
@@ -53,8 +61,8 @@ const startScanning = async () => {
   }
 }
 
-onMounted(async () => {
-  await barCodeSuccess((_: string, quaggaPayload: QuaggaImageObject) => {
+onMounted(() => {
+  barCodeSuccess((_: IpcRendererEvent, quaggaPayload: QuaggaImageObject) => {
     console.log('codice a barre acquisito', quaggaPayload)
 
     barCode.value = quaggaPayload.codeResult.code
@@ -104,7 +112,7 @@ onMounted(async () => {
       </div>
       <div class="container__form__input-container">
         <label for="quantity">Quantità</label>
-        <input id="quantity" v-model="quantity" type="number" name="quantity" placeholder="0" />
+        <input id="quantity" v-model="quantityNum" type="number" name="quantity" placeholder="0" />
       </div>
       <!-- <div class="container__form__input-container">
         <label for="img-url">Immagine prodotto</label>

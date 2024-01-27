@@ -2,10 +2,11 @@
 import { onMounted } from 'vue'
 
 import { useItemsStore } from './store/items'
+import { IpcRendererEvent } from 'electron'
 
 const itemsStore = useItemsStore()
 
-const { addItemSuccess } = window.events
+const { addItemSuccess, itemToChangeFinded, changeItemSuccess } = window.events
 
 onMounted(async () => {
   try {
@@ -14,8 +15,16 @@ onMounted(async () => {
     console.log(error)
   }
 
-  await addItemSuccess(() => {
-    itemsStore.initItemsStore()
+  addItemSuccess(async () => {
+    await itemsStore.initItemsStore()
+  })
+
+  itemToChangeFinded(async (_: IpcRendererEvent, id: number) => {
+    await itemsStore.setFormPayload(Number(id))
+  })
+
+  changeItemSuccess(async () => {
+    await itemsStore.initItemsStore()
   })
 })
 </script>
