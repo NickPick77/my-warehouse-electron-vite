@@ -1,4 +1,4 @@
-# my-warehouse-nuxt
+# My Warehouse | Vue3 - Electron - Vite
 
 An Electron application with Vue and TypeScript
 
