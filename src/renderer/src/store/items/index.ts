@@ -13,8 +13,19 @@ export const useItemsStore = defineStore('items', {
   actions: {
     async initItemsStore() {
       const { items } = await getAllItems()
+      console.log('getted', items)
 
-      this.items = items
+      this.items = [...items]
+
+      items.forEach((item) => {
+        console.log(item)
+
+        this.filteredItems = this.filteredItems.filter(
+          (filteredItem) => filteredItem.id === item.id
+        )
+      })
+
+      //Handlers for home filters required
     },
     async clearAllItems() {
       this.allItemSelected = false
@@ -33,6 +44,12 @@ export const useItemsStore = defineStore('items', {
     },
     async handleSelectItem(id: ItemPayload['id']) {
       this.items.find((item: ItemPayload) => {
+        if (item.id === id) {
+          item.isSelected = !item.isSelected
+        }
+      })
+
+      this.filteredItems.find((item: ItemPayload) => {
         if (item.id === id) {
           item.isSelected = !item.isSelected
         }
@@ -66,7 +83,9 @@ export const useItemsStore = defineStore('items', {
     async handleSearchItems(searchString: string) {
       const { items } = await searchItems(searchString)
 
-      this.filteredItems = items
+      console.log(items)
+
+      this.filteredItems = [...items]
     },
     async clearFilteredItems() {
       this.filteredItems = []

@@ -21,7 +21,6 @@ watch(searchQuery, (newSearchValue) => {
 
   if (newSearchValue.length >= 3) {
     searchDebounceTimer.value = setTimeout(() => {
-      console.log(newSearchValue)
       itemsStore.handleSearchItems(newSearchValue)
     }, 500)
   } else {
