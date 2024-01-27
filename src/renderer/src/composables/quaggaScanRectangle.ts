@@ -1,31 +1,10 @@
-import { QuaggaImageObject } from '../types/quagga'
+import { QuaggaImageObject } from '@renderer/types/quagga'
 import { inject, onMounted } from 'vue'
 
 export const useQuaggaScanRectangle = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const $Quagga: any = inject('Quagga')
 
-  // function calculateRectFromArea(canvas, area) {
-  //   const canvasWidth = ref(canvas.width),
-  //     canvasHeight = ref(canvas.height)
-
-  //   const top = ref(parseInt(area.top) / 100),
-  //     right = ref(parseInt(area.right) / 100),
-  //     bottom = ref(parseInt(area.bottom) / 100),
-  //     left = ref(parseInt(area.left) / 100)
-
-  //   top.value *= canvasHeight.value
-  //   right.value = canvasWidth.value - canvasWidth.value * right.value
-  //   bottom.value = canvasHeight.value - canvasHeight.value * bottom.value
-  //   left.value *= canvasWidth.value
-
-  //   return {
-  //     x: left.value,
-  //     y: top.value,
-  //     width: right.value - left.value,
-  //     height: bottom.value - top.value
-  //   }
-  // }
   // const resultCollector = Quagga.ResultCollector.create({
   //   capture: true, // keep track of the image producing this result
   //   capacity: 20, // maximum number of results to store
