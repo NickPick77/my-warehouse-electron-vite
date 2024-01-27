@@ -9,7 +9,7 @@ import { RouteLocation } from 'vue-router'
  * */
 export async function loadLayoutMiddleware(route: RouteLocation) {
   try {
-    const layout = route.meta.layout
+    const layout: string = route.meta.layout as string
 
     if (!layout) {
       return
@@ -17,10 +17,8 @@ export async function loadLayoutMiddleware(route: RouteLocation) {
 
     const layoutComponent = await import(`@renderer/layouts/${layout}.vue`)
     route.meta.layoutComponent = layoutComponent.default
-    console.log(route.meta.layoutComponent)
   } catch (e) {
     console.error('Error occurred in processing of layouts: ', e)
-    console.log('Mounted default layout AppLayoutDefault')
     const layout = 'AppLayoutDefault'
     const layoutComponent = await import(`@renderer/layouts/${layout}.vue`)
     route.meta.layoutComponent = layoutComponent.default
