@@ -4,11 +4,11 @@ import { itemsGetters } from '@renderer/store/items/getters'
 
 import { type ItemPayload } from '@renderer/types/items'
 
-const { getAllItems, addItem, removeItem, removeAllItems, removeSelectedItems } = window.events
+const { getAllItems, addItem, removeAllItems, removeSelectedItems, changeItem } = window.events
 
 export const useItemsStore = defineStore('items', {
   state: itemsState(),
-  getters: itemsGetters,
+  getters: { ...itemsGetters() },
   actions: {
     async initItemsStore() {
       const { items } = await getAllItems()
@@ -16,21 +16,19 @@ export const useItemsStore = defineStore('items', {
       this.items = items
     },
     async clearAllItems() {
-      this.items = []
       this.allItemSelected = false
+
       await removeAllItems()
+
+      await this.initItemsStore()
     },
     async clearSelectedItems(ids: number[]) {
-      this.items = this.items.filter((item) => !ids.includes(Number(item.id)))
       await removeSelectedItems(ids)
+
+      await this.initItemsStore()
     },
     async handleAddItem(item: ItemPayload) {
-      this.items.push(item)
       await addItem(item)
-    },
-    async handleRemoveItem(id: ItemPayload['id']) {
-      this.items = this.items.filter((item) => item.id !== id)
-      await removeItem(Number(id))
     },
     async handleSelectItem(id: ItemPayload['id']) {
       this.items.find((item: ItemPayload) => {
@@ -53,6 +51,17 @@ export const useItemsStore = defineStore('items', {
       })
 
       this.allItemSelected = !this.allItemSelected
+    },
+    async setFormPayload(id: number) {
+      this.items.find((item: ItemPayload) => {
+        if (item.id === id) {
+          this.formPayload = { ...item, fromChange: true }
+        }
+      })
+    },
+    async handleChangeItem(itemDetails: ItemPayload) {
+      await changeItem(itemDetails)
+      await this.initItemsStore()
     }
   }
 })

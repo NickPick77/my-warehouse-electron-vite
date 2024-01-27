@@ -22,6 +22,36 @@ const ipcMainHandlers = (
     }
   })
 
+  ipcMain.handle('newProductWindowWithItem', (_, id: number) => {
+    if (windows.productWindow && !windows.productWindow.isDestroyed()) {
+      windows.productWindow.focus()
+    } else {
+      config.db.get(
+        `
+          SELECT *
+          FROM items
+          WHERE id = ?
+        `,
+        [id],
+        (err, item: ItemPayload) => {
+          if (err) {
+            console.log("Errore durante il recupero dell'elemento:", err.message)
+          } else {
+            if (item) {
+              windows.productWindow = createAddProductWindow(preload, config.icon) as BrowserWindow
+
+              windows.productWindow.on('ready-to-show', () =>
+                windows.productWindow?.webContents.send('itemToChangeFinded', id)
+              )
+            } else {
+              console.log('Nessun elemento trovato con ID:', id)
+            }
+          }
+        }
+      )
+    }
+  })
+
   ipcMain.handle('closeProductWindow', () => {
     windows.productWindow?.close()
   })
@@ -53,6 +83,11 @@ const ipcMainHandlers = (
 
   ipcMain.handle('addItem', (_, itemDetails) => {
     const { isSelected, bar_code, item_name, quantity } = itemDetails
+
+    //Inizia una transazione
+    config.db.run('BEGIN TRANSACTION')
+
+    // Esegui query nel DB
     config.db.run(
       `
     INSERT INTO items (isSelected, bar_code, item_name, quantity)
@@ -61,9 +96,13 @@ const ipcMainHandlers = (
       [isSelected, bar_code, item_name, quantity],
       (err) => {
         if (err) {
-          console.log('product-added', { success: false, error: err.message })
+          // Annulla la transazione in caso di errore
+          config.db.run('ROLLBACK', () =>
+            console.log('product-added-rollback', { success: false, error: err.message })
+          )
         } else {
-          console.log('product-added', { success: true })
+          // Committa la transazione se non ci sono errori
+          config.db.run('COMMIT', () => console.log('product-added', { success: true }))
         }
       }
     )
@@ -104,6 +143,30 @@ const ipcMainHandlers = (
       })
       stmt.finalize()
     })
+  })
+
+  ipcMain.handle('changeItem', (_, itemDetails: ItemPayload) => {
+    const { bar_code, item_name, quantity, id } = itemDetails
+
+    config.db.run(
+      `
+      UPDATE items
+      SET bar_code = ?,
+          item_name = ?, 
+          quantity = ?
+      WHERE id = ?
+      `,
+      [bar_code, item_name, quantity, id],
+      (err) => {
+        if (err) {
+          console.log('item-modify', { success: false, error: err.message })
+        } else {
+          console.log('item-modify', { success: true })
+        }
+      }
+    )
+
+    windows.mainWindow?.webContents.send('changeItemSuccess')
   })
 
   ipcMain.handle('openWebCamModal', () => {

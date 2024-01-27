@@ -1,7 +1,8 @@
-import { type ItemPayload } from '@renderer/types/items'
+import { type FormPayload, type ItemPayload } from '@renderer/types/items'
 
 export interface ItemsStateType {
   items: ItemPayload[]
+  formPayload: FormPayload
   allItemSelected: boolean
 }
 
@@ -23,6 +24,12 @@ export const itemsState = () => {
         img_url: 'https://picsum.photos/200/300'
       }
     ],
+    formPayload: {
+      isSelected: false,
+      item_name: '',
+      quantity: 0,
+      fromChange: false
+    },
     allItemSelected: false
   })
 }

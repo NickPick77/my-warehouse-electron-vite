@@ -9,9 +9,13 @@ export interface ItemPayload {
   bar_code_title?: string
 }
 
+export interface FormPayload extends ItemPayload {
+  fromChange: boolean
+}
+
 export interface ProductFormPayload {
   type: 'save' | 'clear'
-  formPayload: ItemPayload
+  formPayload: FormPayload
 }
 
 export interface ItemsDBpayload {
