@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, inject } from 'vue'
-import type { QuaggaImageObject } from '../types/quagga'
-import { useQuaggaScanRectangle } from '../composables/quaggaScanRectangle'
+import type { QuaggaImageObject } from '@renderer/types/quagga'
+import { useQuaggaScanRectangle } from '@renderer/composables/quaggaScanRectangle'
 
 export interface ProductFormPayload {
   type: 'save' | 'clear'
@@ -40,13 +40,13 @@ const handleBarcodeDetection = async (result: QuaggaImageObject) => {
 useQuaggaScanRectangle()
 
 onMounted(() => {
+  console.log(barcodeScanner.value)
   $Quagga.init(
     {
       inputStream: {
         name: 'Live',
         type: 'LiveStream',
         target: barcodeScanner.value,
-        locate: true,
         singleChannel: false
       },
       locate: true,
@@ -55,8 +55,8 @@ onMounted(() => {
         halfSample: true
       },
       constraints: {
-        width: 620,
-        height: 420,
+        width: 1920,
+        height: 1080,
         facingMode: 'environment', // 'user' per la fotocamera frontale
         aspectRatio: { min: 1, max: 2 }
       },
@@ -84,7 +84,7 @@ onMounted(() => {
         console.error("Errore durante l'inizializzazione di Quagga:", err)
         return
       }
-      console.log('inizializzazione di Quagga')
+      console.log('inizializzazione di Quagga', $Quagga.CameraAccess.getActiveTrack().getSettings())
 
       $Quagga.start()
     }
@@ -102,7 +102,7 @@ onBeforeUnmount(() => {
 
 <template>
   <section>
-    <div ref="barcodeScanner"></div>
+    <div ref="barcodeScanner" />
   </section>
 </template>
 

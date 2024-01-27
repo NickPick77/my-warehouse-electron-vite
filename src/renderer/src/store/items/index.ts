@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
-import { itemsState } from './state'
-import { itemsGetters } from './getters'
+import { itemsState } from '@renderer/store/items/state'
+import { itemsGetters } from '@renderer/store/items/getters'
 
-import { type ItemPayload } from '../../types/items'
+import { type ItemPayload } from '@renderer/types/items'
 
 const { getAllItems, addItem, removeItem, removeAllItems, removeSelectedItems } = window.events
 

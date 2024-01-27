@@ -1,6 +1,6 @@
 import { _GettersTree } from 'pinia'
-import type { ItemsStateType } from './state'
-import type { ItemPayload } from '../../types/items'
+import type { ItemsStateType } from '@renderer/store/items/state'
+import type { ItemPayload } from '@renderer/types/items'
 
 // Definizione del tipo dell'oggetto ItemType
 export interface ItemType {

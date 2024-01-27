@@ -1,4 +1,4 @@
-import { type ItemPayload } from '../../types/items'
+import { type ItemPayload } from '@renderer/types/items'
 
 export interface ItemsStateType {
   items: ItemPayload[]
