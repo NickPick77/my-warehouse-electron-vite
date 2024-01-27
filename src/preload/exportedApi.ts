@@ -4,9 +4,11 @@ import { type QuaggaImageObject } from '../renderer/src/types/quagga'
 export interface ExposedApi {
   newProductWindow: () => Promise<void>
   openWebCamModal: () => Promise<void>
-  barCodeDetected: (quaggaPayload) => Promise<QuaggaImageObject>
-  barCodeSuccess: (callback) => Promise<void>
-  addItemSuccess: (callback) => Promise<void>
+  barCodeDetected: (quaggaPayload: QuaggaImageObject) => Promise<QuaggaImageObject>
+  barCodeSuccess: (
+    callback: (channel: string, quaggaPayload: QuaggaImageObject) => void
+  ) => Promise<void>
+  addItemSuccess: (callback: () => void) => Promise<void>
   closeProductWindow: () => Promise<void>
   getAllItems: () => Promise<ItemsDBpayload>
   addItem: (payload: ItemPayload) => Promise<void>
