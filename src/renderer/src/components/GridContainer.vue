@@ -1,16 +1,25 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import GridHeading from '@components/GridHeading.vue'
 import ItemRow from '@components/ItemRow.vue'
 
 import { useItemsStore } from '@renderer/store/items/index'
 
 const itemsStore = useItemsStore()
+
+const suitableItems = computed(() => {
+  if (itemsStore.getFilteredItems.length) {
+    return itemsStore.getFilteredItems
+  }
+
+  return itemsStore.getItems
+})
 </script>
 
 <template>
   <div class="grid">
     <GridHeading class="grid__heading" />
-    <div v-for="item in itemsStore.getItems" :key="item.id" class="grid__item">
+    <div v-for="item in suitableItems" :key="item.id" class="grid__item">
       <ItemRow :item-data="item" />
     </div>
   </div>

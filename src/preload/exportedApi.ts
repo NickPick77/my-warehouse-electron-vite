@@ -20,6 +20,7 @@ export interface ExposedApi {
   changeItem: (itemDetails: ItemPayload) => Promise<void>
   itemToChangeFinded: (callback: (_: IpcRendererEvent, id: number) => void) => void
   changeItemSuccess: (callback: () => void) => void
+  searchItems: (searchString: string) => Promise<ItemsDBpayload>
 }
 
 export interface VersionInfo {

@@ -169,6 +169,45 @@ const ipcMainHandlers = (
     windows.mainWindow?.webContents.send('changeItemSuccess')
   })
 
+  ipcMain.handle('searchItems', async (_, searchString: string) => {
+    try {
+      const items: ItemPayload[] = await new Promise((resolve, reject) => {
+        const searchStringQuery = searchString
+
+        config.db.all(
+          `
+      SELECT *
+      FROM items
+      WHERE bar_code || item_name LIKE '%' || ? || '%'
+      `,
+          [searchStringQuery], // Stringa di ricerca dell'utente
+          (err, items: ItemPayload[]) => {
+            if (err) {
+              console.error('Errore durante il recupero degli elementi:', err)
+              reject({ success: false, error: err.message })
+            } else {
+              if (items.length > 0) {
+                console.log('Elementi trovati:', items)
+                resolve(items)
+              } else {
+                console.log('Nessun elemento trovato con la stringa di ricerca specificata.')
+                resolve(items)
+              }
+            }
+          }
+        )
+      })
+      const parsedItems = items.map((item) => ({
+        ...item,
+        isSelected: Boolean(item.isSelected)
+      }))
+      return { success: true, items: parsedItems }
+    } catch (error) {
+      console.error('Error retrieving items:', error)
+      return { success: false, error: (error as Error).message }
+    }
+  })
+
   ipcMain.handle('openWebCamModal', () => {
     if (windows.cameraWindow && !windows.cameraWindow.isDestroyed()) {
       windows.cameraWindow.focus()

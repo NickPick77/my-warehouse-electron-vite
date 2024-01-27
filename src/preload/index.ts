@@ -18,7 +18,8 @@ const api: ExposedApi = {
   removeAllItems: () => ipcRenderer.invoke('removeAllItems'),
   changeItem: (itemDetails) => ipcRenderer.invoke('changeItem', itemDetails),
   itemToChangeFinded: (callback) => ipcRenderer.on('itemToChangeFinded', callback),
-  changeItemSuccess: (callback) => ipcRenderer.on('changeItemSuccess', callback)
+  changeItemSuccess: (callback) => ipcRenderer.on('changeItemSuccess', callback),
+  searchItems: (searchString: string) => ipcRenderer.invoke('searchItems', searchString)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

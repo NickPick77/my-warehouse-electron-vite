@@ -4,7 +4,8 @@ import { itemsGetters } from '@renderer/store/items/getters'
 
 import { type ItemPayload } from '@renderer/types/items'
 
-const { getAllItems, addItem, removeAllItems, removeSelectedItems, changeItem } = window.events
+const { getAllItems, addItem, removeAllItems, removeSelectedItems, changeItem, searchItems } =
+  window.events
 
 export const useItemsStore = defineStore('items', {
   state: itemsState(),
@@ -61,7 +62,14 @@ export const useItemsStore = defineStore('items', {
     },
     async handleChangeItem(itemDetails: ItemPayload) {
       await changeItem(itemDetails)
-      await this.initItemsStore()
+    },
+    async handleSearchItems(searchString: string) {
+      const { items } = await searchItems(searchString)
+
+      this.filteredItems = items
+    },
+    async clearFilteredItems() {
+      this.filteredItems = []
     }
   }
 })

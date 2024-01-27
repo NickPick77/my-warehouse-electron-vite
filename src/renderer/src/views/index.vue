@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 import RoundCrossButton from '@components/RoundCrossButton.vue'
 import RoundIconButton from '@components/RoundIconButton.vue'
@@ -13,6 +13,21 @@ const itemsStore = useItemsStore()
 const { newProductWindow } = window.events
 
 const isHovered = ref<boolean>(false)
+const searchQuery = ref<string>('')
+const searchDebounceTimer = ref<NodeJS.Timeout>(setTimeout(() => {}, 0))
+
+watch(searchQuery, (newSearchValue) => {
+  clearTimeout(searchDebounceTimer.value)
+
+  if (newSearchValue.length >= 3) {
+    searchDebounceTimer.value = setTimeout(() => {
+      console.log(newSearchValue)
+      itemsStore.handleSearchItems(newSearchValue)
+    }, 500)
+  } else {
+    itemsStore.clearFilteredItems()
+  }
+})
 
 const handleOpenAddItemWindow = async () => {
   await newProductWindow()
@@ -55,6 +70,7 @@ const handleRemoveAllItems = async () => {
         <RoundIconButton class="utils-btn__wrapper__icon" @handle-click="handleRemoveSelectedItems">
           <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
         </RoundIconButton>
+        <input id="search" v-model="searchQuery" type="text" name="search" />
       </div>
     </div>
     <GridContainer />
