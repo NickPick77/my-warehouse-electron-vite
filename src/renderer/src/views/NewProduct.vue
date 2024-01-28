@@ -21,6 +21,8 @@ const handleOnSaveItem = async ($event: ProductFormPayload) => {
     await handleOnCloseAddProduct()
   } else {
     itemsStore.handleChangeItem($event.formPayload)
+
+    await handleOnCloseAddProduct()
   }
 
   if ($event.type === 'clear') {
