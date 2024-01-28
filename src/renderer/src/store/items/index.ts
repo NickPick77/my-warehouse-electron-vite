@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { itemsState } from '@renderer/store/items/state'
 import { itemsGetters } from '@renderer/store/items/getters'
+import { useFiltersStore } from '../filters'
 
 import { type ItemPayload } from '@renderer/types/items'
 
@@ -9,7 +10,7 @@ const { getAllItems, addItem, removeAllItems, removeSelectedItems, changeItem, s
 
 export const useItemsStore = defineStore('items', {
   state: itemsState(),
-  getters: { ...itemsGetters() },
+  getters: itemsGetters(),
   actions: {
     async initItemsStore() {
       const { items } = await getAllItems()
@@ -80,8 +81,10 @@ export const useItemsStore = defineStore('items', {
     async handleChangeItem(itemDetails: ItemPayload) {
       await changeItem(itemDetails)
     },
-    async handleSearchItems(searchString: string) {
-      const { items } = await searchItems(searchString)
+    async handleSearchItems() {
+      const searchQuery = useFiltersStore().getSearchQuery
+
+      const { items } = await searchItems(searchQuery)
 
       console.log(items)
 
