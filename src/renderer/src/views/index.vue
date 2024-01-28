@@ -7,24 +7,29 @@ import GridContainer from '@components/GridContainer.vue'
 
 import type { ItemPayload } from '@renderer/types/items'
 import { useItemsStore } from '@renderer/store/items'
+import { useFiltersStore } from '@renderer/store/filters'
 
 const itemsStore = useItemsStore()
+const filtersStore = useFiltersStore()
 
 const { newProductWindow } = window.events
 
 const isHovered = ref<boolean>(false)
+const isSearchInputOpen = ref<boolean>(false)
 const searchQuery = ref<string>('')
 const searchDebounceTimer = ref<NodeJS.Timeout>(setTimeout(() => {}, 0))
 
-watch(searchQuery, (newSearchValue) => {
+watch(searchQuery, async (newSearchValue) => {
   clearTimeout(searchDebounceTimer.value)
 
   if (newSearchValue.length >= 3) {
-    searchDebounceTimer.value = setTimeout(() => {
-      itemsStore.handleSearchItems(newSearchValue)
+    searchDebounceTimer.value = setTimeout(async () => {
+      await filtersStore.setSearchQuery(newSearchValue)
+      await itemsStore.handleSearchItems()
     }, 500)
   } else {
-    itemsStore.clearFilteredItems()
+    await itemsStore.clearFilteredItems()
+    await filtersStore.setSearchQuery('')
   }
 })
 
@@ -48,6 +53,10 @@ const handleRemoveSelectedItems = async () => {
 const handleRemoveAllItems = async () => {
   await itemsStore.clearAllItems()
 }
+
+const handleSearchinput = async () => {
+  isSearchInputOpen.value = !isSearchInputOpen.value
+}
 </script>
 
 <template>
@@ -66,10 +75,24 @@ const handleRemoveAllItems = async () => {
             icon="fa-solid fa-trash"
           />
         </RoundIconButton>
-        <RoundIconButton class="utils-btn__wrapper__icon" @handle-click="handleRemoveSelectedItems">
-          <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
-        </RoundIconButton>
-        <input id="search" v-model="searchQuery" type="text" name="search" />
+        <div class="utils-btn__wrapper__search-wrapper">
+          <input
+            id="search"
+            v-model="searchQuery"
+            :class="[
+              'utils-btn__wrapper__search-wrapper__search-input',
+              { 'utils-btn__wrapper__search-wrapper__search-input--open': isSearchInputOpen }
+            ]"
+            type="text"
+            name="search"
+          />
+          <RoundIconButton
+            class="utils-btn__wrapper__search-wrapper__icon"
+            @handle-click="handleSearchinput"
+          >
+            <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
+          </RoundIconButton>
+        </div>
       </div>
     </div>
     <GridContainer />
@@ -92,11 +115,46 @@ const handleRemoveAllItems = async () => {
     border-radius: 16px;
     background-color: white;
 
-    &__icon {
-      &:hover {
-        & > svg {
-          transform: scale(1.2);
-          transition: transform 0.5s ease-in-out;
+    &__search-wrapper {
+      position: relative;
+      flex: 1 0 auto;
+      &__search-input {
+        width: 20px;
+        margin-top: 1px;
+        line-height: 20px;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.01);
+        box-shadow:
+          rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+          rgba(60, 64, 67, 0.15) 0px -1px 2px 0px;
+        opacity: 0;
+        transition:
+          width 0.5s ease-in-out,
+          opacity 0.5s ease-in-out,
+          padding 0.5s ease-in-out;
+
+        &--open {
+          width: 120px;
+          opacity: 1;
+          padding-left: 8px;
+
+          &:focus {
+            outline: 1px dashed rgba(22, 126, 222, 0.7);
+            outline-offset: 0.2em;
+          }
+        }
+      }
+
+      &__icon {
+        position: absolute;
+        top: 0;
+        right: 0;
+
+        &:hover {
+          & > svg {
+            transform: scale(1.2);
+            transition: transform 0.5s ease-in-out;
+          }
         }
       }
     }
