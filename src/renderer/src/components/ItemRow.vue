@@ -22,19 +22,6 @@ const emit = defineEmits(['handleAllItemSelected'])
 
 const isHovered = ref<boolean>(false)
 
-const setStatusWithQuantity = computed(() => {
-  const statusSpanDefaultClass = 'item-row-container__quantity__status'
-  if (Number(itemData.quantity) <= 3) {
-    return [statusSpanDefaultClass, `${statusSpanDefaultClass}--warning`]
-  }
-
-  if (Number(itemData.quantity) <= 5) {
-    return [statusSpanDefaultClass, `${statusSpanDefaultClass}--alert`]
-  }
-
-  return [statusSpanDefaultClass]
-})
-
 const handleSelectItem = async (id: number) => {
   if (!id) {
     emit('handleAllItemSelected')
@@ -63,7 +50,13 @@ const handleChangeItem = async (id: number) => {
     <div class="item-row-container__quantity">
       <span
         v-if="Number(itemData.quantity) || itemData.quantity === 0"
-        :class="setStatusWithQuantity"
+        :class="[
+          'item-row-container__quantity__status',
+          {
+            'item-row-container__quantity__status--warning': Number(itemData.quantity) <= 3,
+            'item-row-container__quantity__status--alert': Number(itemData.quantity) <= 5
+          }
+        ]"
       />
       {{ itemData.quantity }}
     </div>
