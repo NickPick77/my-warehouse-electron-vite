@@ -27,8 +27,8 @@ jobs:
 
       - name: Install Dependencies
         run: npm run clean
-        run: npm uninstall node-pre-gyp --save
-        run: npm install @mapbox/node-pre-gyp --save
+             npm uninstall node-pre-gyp --save
+             npm install @mapbox/node-pre-gyp --save
 
       - name: build-linux
         if: matrix.os == 'ubuntu-latest'
