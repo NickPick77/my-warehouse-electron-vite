@@ -1,5 +1,7 @@
 name: Build/release My Warehouse app
 
+
+
 on:
   push:
     tags:
@@ -12,6 +14,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
+        node-version: ['20.10.x']
 
     steps:
       - name: Check out Git repository
