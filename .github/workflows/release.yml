@@ -26,9 +26,12 @@ jobs:
           node-version: '20.10'
 
       - name: Install Dependencies
-        run: npm run clean
+        run: |
+             npm run clean
              npm uninstall node-pre-gyp --save
              npm install @mapbox/node-pre-gyp --save
+             npm uninstall @npmcli/move-file --save
+             npm list
 
       - name: build-linux
         if: matrix.os == 'ubuntu-latest'
