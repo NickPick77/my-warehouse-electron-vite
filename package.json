@@ -21,8 +21,7 @@
     "build:mac": "npm run build && electron-builder --mac --arm64 --config",
     "build:linux": "npm run build && electron-builder --linux --config",
     "preclean": "npm uninstall sqlite3",
-    "clean": "npm install",
-    "postclean": "npm install sqlite3 --build-from-source --target_arch=arm64 --fallback-to-build"
+    "clean": "npm install"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
