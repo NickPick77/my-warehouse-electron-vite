@@ -1,6 +1,7 @@
 name: Build/release My Warehouse app
 
-
+permissions:
+  contents: write
 
 on:
   push:
