@@ -28,8 +28,8 @@ jobs:
       - name: Install Dependencies
         run: |
              npm uninstall node-pre-gyp --save
-             npm uninstall @npmcli/move-file --save
              npm install @mapbox/node-pre-gyp --save
+             npm uninstall @npmcli/move-file --save
              npm list
              npm run clean
 
