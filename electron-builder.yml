@@ -11,7 +11,7 @@ files:
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 asarUnpack:
   - resources/**
-  - node_modules/sqlite3
+  # - node_modules/sqlite3
 win:
   executableName: my-warehouse
 nsis:
