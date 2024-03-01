@@ -45,10 +45,10 @@ jobs:
         with:
           node-version: '20.10'
       
-      - name: Install Dependencies
-        run: |
-             npm install
-             npm rebuild
+      # - name: Install Dependencies
+      #   run: |
+      #        npm install
+      #        npm rebuild
 
       # - name: build-linux
       #   if: matrix.os == 'ubuntu-latest'
@@ -56,7 +56,11 @@ jobs:
 
       - name: build-mac
         if: matrix.os == 'macos-latest'
-        run: npm run build:mac
+        run: |
+             npm run clean
+             npm install sqlite3 --build-from-source --target_arch=arm64 --fallback-to-build
+             npm run build:mac
+
 
       - name: build-win
         if: matrix.os == 'windows-latest'
