@@ -45,16 +45,6 @@ jobs:
         with:
           node-version: '20.10'
 
-      # - name: Install Dependencies
-      #   run: |
-      #        npm uninstall @npmcli/move-file --save
-      #        npm list
-      #        npm install
-
-      # - name: build-linux
-      #   if: matrix.os == 'ubuntu-latest'
-      #   run: npm run build:linux
-
       - name: build-mac
         if: matrix.os == 'macos-latest'
         run: npm run build:mac
