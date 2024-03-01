@@ -15,7 +15,7 @@ const handleClick = () => {
 <template>
   <div class="check-box" @click="handleClick">
     <div :class="['check-box__toggle', { 'check-box__toggle--selected': isSelected }]">
-      <span></span>
+      <span />
     </div>
   </div>
 </template>
