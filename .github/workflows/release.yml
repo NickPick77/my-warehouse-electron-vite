@@ -44,6 +44,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20.10'
+      
+      - name: Install Dependencies
+        run: |
+             npm install
+             npm rebuild
+
+      # - name: build-linux
+      #   if: matrix.os == 'ubuntu-latest'
+      #   run: npm run build:linux
 
       - name: build-mac
         if: matrix.os == 'macos-latest'
