@@ -64,7 +64,10 @@ jobs:
 
       - name: build-win
         if: matrix.os == 'windows-latest'
-        run: npm run build:win
+        run: |
+             npm run clean
+             npm install sqlite3 --build-from-source --target_arch=arm64 --fallback-to-build 
+             npm run build:win
 
       - name: release
         uses: softprops/action-gh-release@v1
