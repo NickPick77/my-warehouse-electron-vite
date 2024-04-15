@@ -35,6 +35,7 @@ export default defineConfig({
       cssMinify: true,
       rollupOptions: {
         input: resolve(__dirname, 'src/renderer/index.html'),
+        external: ['sqlite3'],
         output: {
           chunkFileNames: 'assets/chunk/[hash].js',
           entryFileNames: 'assets/entry/index.js',
