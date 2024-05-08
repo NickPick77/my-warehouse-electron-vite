@@ -6,3 +6,4 @@ out
 *.db
 .editorconfig
 .vscode
+asar_decompressed
