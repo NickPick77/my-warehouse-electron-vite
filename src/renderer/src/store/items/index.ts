@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
-import { itemsState } from '@renderer/store/items/state'
-import { itemsGetters } from '@renderer/store/items/getters'
+import type { ItemsStateType } from '@renderer/store/items/types'
 import { useFiltersStore } from '../filters'
 
 import { type ItemPayload } from '@renderer/types/items'
@@ -9,8 +8,25 @@ const { getAllItems, addItem, removeAllItems, removeSelectedItems, changeItem, s
   window.events
 
 export const useItemsStore = defineStore('items', {
-  state: itemsState(),
-  getters: itemsGetters(),
+  state: (): ItemsStateType => ({
+    items: [],
+    filteredItems: [],
+    formPayload: {
+      isSelected: false,
+      item_name: '',
+      quantity: 0,
+      fromChange: false
+    },
+    allItemSelected: false
+  }),
+  getters: {
+    getItems: (state: ItemsStateType) => state.items,
+    getFilteredItems: (state: ItemsStateType) => state.filteredItems,
+    getAllItemSelected: (state: ItemsStateType) => state.allItemSelected,
+    getAllSelectedItems: (state: ItemsStateType) =>
+      state.items.filter((item: ItemPayload) => item.isSelected),
+    getFormPayload: (state: ItemsStateType) => state.formPayload
+  },
   actions: {
     async initItemsStore() {
       const { items } = await getAllItems()

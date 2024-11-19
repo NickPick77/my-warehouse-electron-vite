@@ -1,44 +1,86 @@
 name: Build/release My Warehouse app
 
+permissions:
+  contents: write
+
 on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'debug'
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
+      tags:
+        description: 'Test scenario tags'
+        required: true
+        type: boolean
+      environment:
+        description: 'Environment to run tests against'
+        type: environment
+        required: false
   push:
     tags:
       - v*.*.*
 
 jobs:
-  release:
+  build:
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [macos-latest, windows-latest]
+        node-version: ['20.10.x']
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 16
-
+          node-version: '20.10'
+      
       - name: Install Dependencies
-        run: npm install
+        run:  npm install 
+      
+      # - name: Rebuild Dependencies
+      #   run:  |
+      #     npm install sqlite3 --build-from-source --target_arch=arm64 --fallback-to-build
+      #     npm run installAppDeps
 
-      - name: build-linux
-        if: matrix.os == 'ubuntu-latest'
-        run: npm run build:linux
+      - name: Build
+        run: npm run build
+      
+      - name: List output
+        run: ls -R out/
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-build-${{ matrix.os }}
+          path: out/
+        id: build-artifact
+        
+      # - name: Download Build Artifacts
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: app-build-${{ matrix.os }}
 
       - name: build-mac
         if: matrix.os == 'macos-latest'
         run: npm run build:mac
-
+  
       - name: build-win
         if: matrix.os == 'windows-latest'
         run: npm run build:win
 
-      - name: release
-        uses: softprops/action-gh-release@v1
+      - name: pre-release
+        uses: softprops/action-gh-release@v2
         with:
           draft: true
           files: |
@@ -53,4 +95,4 @@ jobs:
             dist/*.yml
             dist/*.blockmap
         env:
-          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
