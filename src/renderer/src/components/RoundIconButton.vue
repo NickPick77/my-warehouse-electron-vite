@@ -1,12 +1,11 @@
 <script setup lang="ts">
 type Themes = 'main' | 'error'
 
-interface Props {
-  theme?: Themes
-}
-
-const { theme } = withDefaults(defineProps<Props>(), {
-  theme: 'main'
+const { theme } = defineProps({
+  theme: {
+    type: String as () => Themes,
+    default: 'main'
+  }
 })
 
 const emit = defineEmits(['handleClick'])
@@ -24,6 +23,7 @@ const handleClick = () => {
 
 <style lang="scss" scoped>
 @use '@renderer/assets/style/main.scss' as *;
+@use 'sass:color';
 
 $error-color: rgb(255, 0, 0);
 $background-color: rgba(22, 126, 222, 0.7);
@@ -45,7 +45,7 @@ $background-color: rgba(22, 126, 222, 0.7);
     background-color: var(--mw-primary);
 
     &:hover {
-      background-color: darken($background-color, 10%);
+      background-color: color.adjust($background-color, $lightness: -10%);
       transition: background-color 0.5s ease-in-out;
     }
   }
@@ -54,7 +54,7 @@ $background-color: rgba(22, 126, 222, 0.7);
     background-color: var(--mw-error);
 
     &:hover {
-      background-color: darken($error-color, 10%);
+      background-color: color.adjust($error-color, $lightness: -10%);
       transition: background-color 0.5s ease-in-out;
     }
   }

@@ -1,12 +1,11 @@
 <script setup lang="ts">
 type Themes = 'add' | 'close'
 
-interface Props {
-  theme: Themes
-}
-
-const { theme } = withDefaults(defineProps<Props>(), {
-  theme: 'add'
+const { theme } = defineProps({
+  theme: {
+    type: String as () => Themes,
+    default: 'add' as Themes
+  }
 })
 
 const emit = defineEmits(['handleClick'])
@@ -29,6 +28,7 @@ const handleClick = () => {
 
 <style lang="scss" scoped>
 @use '@renderer/assets/style/main.scss' as *;
+@use 'sass:color';
 
 $error-color: rgb(255, 0, 0);
 $success-color: rgb(25, 184, 57);
@@ -49,7 +49,7 @@ $success-color: rgb(25, 184, 57);
   cursor: pointer;
 
   &:hover {
-    background-color: darken($error-color, 10%);
+    background-color: color.adjust($error-color, $lightness: -10%);
   }
 
   &__line-one,
@@ -60,7 +60,7 @@ $success-color: rgb(25, 184, 57);
     height: 6px;
     width: 1px;
     border-radius: 2px;
-    background-color: darken(rgb(0, 0, 0), 20%);
+    background-color: color.adjust(rgb(0, 0, 0), $lightness: -20%);
     transition: transform 0.5s ease-in-out;
 
     &__hover {
@@ -91,7 +91,7 @@ $success-color: rgb(25, 184, 57);
   cursor: pointer;
 
   &:hover {
-    background-color: darken($success-color, 10%);
+    background-color: color.adjust($success-color, $lightness: -10%);
   }
 
   &__line-one {
