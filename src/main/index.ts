@@ -1,30 +1,21 @@
 'use strict'
 import { app, BrowserWindow } from 'electron'
-import { electronApp, is, optimizer } from '@electron-toolkit/utils'
+import { electronApp, optimizer } from '@electron-toolkit/utils'
 
 import createMainWindow from './mainWindow'
 
-import createDb from './databaseHandlers'
 import { join } from 'path'
 
 import ipcMainHandlers from './ipcMainHandlers'
 
-import { type Database as DatabaseType } from 'sqlite3'
+import db from './database/database'
 
 process.env.ROOT = join(__dirname, '..')
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
-const appPath = app.getAppPath().replace('app.asar', 'items.sqlite')
-const devPath = join(app.getAppPath(), 'items.db')
-
-const dbPath = is.dev ? devPath : appPath
-
 let mainWindow: BrowserWindow | null
 let productWindow: BrowserWindow | null
 let cameraWindow: BrowserWindow | null
-
-// SQLite3 Database Initializiation
-const db: DatabaseType = createDb(dbPath)
 
 // Preload and Icon path definition
 const preload = join(process.env.ROOT, 'preload/index.js')
@@ -52,12 +43,27 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) mainWindow = createMainWindow(preload, icon)
   })
 
-  // // Ipc Main Handlers
+  // Quit when all windows are closed, except on macOS. There, it's common
+  // for applications and their menu bar to stay active until the user quits
+  // explicitly with Cmd + Q.
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      
+      try {
+      db.close()
+      } catch (error) {
+        console.error('Error closing the database:', error)
+      }
+
+      app.quit()
+    }
+  })
+
+  // Ipc Main Handlers
   ipcMainHandlers(
     preload,
     {
       icon,
-      db
     },
     { mainWindow, productWindow, cameraWindow }
   )
@@ -100,20 +106,4 @@ app.whenReady().then(() => {
   cameraWindow?.on('closed', () => {
     cameraWindow = null
   })
-})
-
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    db.close((err) => {
-      if (err) {
-        console.error(err.message)
-      } else {
-        console.log('Connessione al database chiusa')
-      }
-    })
-    app.quit()
-  }
 })
