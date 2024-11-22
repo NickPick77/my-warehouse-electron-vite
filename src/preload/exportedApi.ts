@@ -1,10 +1,10 @@
 import { IpcRendererEvent } from 'electron'
 import { type ItemPayload, type ItemsDBpayload } from '../renderer/src/types/items'
 import { type QuaggaImageObject } from '../renderer/src/types/quagga'
+import { IpcInvokeResponse } from '../main/ipcMainHandlers'
 
 export interface ExposedApi {
-  newProductWindow: () => Promise<void>
-  newProductWindowWithItem: (id: number) => Promise<void>
+  openProductWindow: (id?: number) => Promise<IpcInvokeResponse>
   openWebCamModal: () => Promise<void>
   barCodeDetected: (quaggaPayload: QuaggaImageObject) => Promise<QuaggaImageObject>
   barCodeSuccess: (
@@ -18,7 +18,7 @@ export interface ExposedApi {
   removeSelectedItems: (ids: number[]) => Promise<void>
   removeAllItems: () => Promise<void>
   changeItem: (itemDetails: ItemPayload) => Promise<void>
-  itemToChangeFinded: (callback: (_: IpcRendererEvent, id: number) => void) => void
+  itemFinded: (callback: (_: IpcRendererEvent, itemDetails: ItemPayload) => void) => void
   changeItemSuccess: (callback: () => void) => void
   searchItems: (searchString: string) => Promise<ItemsDBpayload>
 }

@@ -12,7 +12,9 @@ const { openWebCamModal, barCodeSuccess } = window.events
 
 const itemsStore = useItemsStore()
 
-const itemData = computed(() => itemsStore.getItems.find((item) => item.id === itemsStore.getFormPayload.id))
+const itemData = computed(() =>
+  itemsStore.getItems.find((item) => item.id === itemsStore.getFormPayload.id)
+)
 
 const productName = ref<string>(itemsStore.getFormPayload.item_name)
 const barCode = ref<string>(itemsStore.getFormPayload.bar_code ?? itemData.value?.bar_code ?? '')
@@ -77,6 +79,8 @@ onMounted(() => {
 
     barCode.value = quaggaPayload.codeResult.code
   })
+
+  console.log(productName.value)
 })
 </script>
 

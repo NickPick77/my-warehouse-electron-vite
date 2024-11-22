@@ -133,7 +133,7 @@ export function searchItems(query: string): Promise<ItemPayload[]> {
   })
 }
 
-export function newProductWindowWithItem(id: number): Promise<ItemPayload> {
+export function getItemById(id: number): Promise<ItemPayload> {
   return new Promise((resolve, reject) => {
     try {
       const stmt: Statement<number, ItemPayload> = db.prepare(GET_ITEM_BY_ID)

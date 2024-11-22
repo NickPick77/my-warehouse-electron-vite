@@ -4,8 +4,15 @@ import { useFiltersStore } from '../filters'
 
 import { type ItemPayload } from '@renderer/types/items'
 
-const { getAllItems, addItem, removeAllItems, removeSelectedItems, changeItem, searchItems } =
-  window.events
+const {
+  getAllItems,
+  addItem,
+  removeAllItems,
+  removeSelectedItems,
+  changeItem,
+  searchItems,
+  openProductWindow
+} = window.events
 
 export const useItemsStore = defineStore('items', {
   state: (): ItemsStateType => ({
@@ -90,13 +97,10 @@ export const useItemsStore = defineStore('items', {
 
       this.allItemSelected = !this.allItemSelected
     },
-    async setFormPayload(id: number) {
-      this.items.find((item: ItemPayload) => {
-        if (item.id === id) {
-          console.log('fromChange', item)
-          this.formPayload = { ...item, fromChange: true }
-        }
-      })
+    async setProductData(item: ItemPayload) {
+
+      console.log('fromChange', item)
+      this.formPayload = { ...item, fromChange: true }
     },
     async handleChangeItem(itemDetails: ItemPayload) {
       await changeItem(itemDetails)

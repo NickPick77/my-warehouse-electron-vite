@@ -1,5 +1,5 @@
 import { BrowserWindow } from 'electron'
-import configureWindow from './config'
+import configureWindow from '../config'
 
 const createWebCamWindow = (preload: string, icon: string) => {
   const cameraWindow = new BrowserWindow({

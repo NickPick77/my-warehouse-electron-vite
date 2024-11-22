@@ -6,7 +6,7 @@ import RoundIconButton from '@components/RoundIconButton.vue'
 import { useItemsStore } from '@renderer/store/items/index'
 import { useFiltersStore } from '@renderer/store/filters/index'
 
-const { newProductWindowWithItem } = window.events
+const { openProductWindow } = window.events
 
 const itemsStore = useItemsStore()
 const filtersStore = useFiltersStore()
@@ -55,13 +55,12 @@ const handleSelectItem = async (id?: number) => {
 }
 
 const handleChangeItem = async (id: number) => {
-  await newProductWindowWithItem(id)
+  await openProductWindow(id)
 }
 </script>
 
 <template>
   <div class="grid-table" :style="{ 'grid-template-columns': `repeat(${keys.length + 1}, auto)` }">
-    <!-- Intestazioni -->
     <div
       v-for="(header, index) in headers"
       :key="'header-' + index"
@@ -80,7 +79,6 @@ const handleChangeItem = async (id: number) => {
 
     <div class="grid-table__cell grid-table__header-cell" />
 
-    <!-- Corpo della tabella -->
     <template v-for="(item, rowIndex) in suitableItems">
       <div
         v-for="(key, colIndex) in keys"
@@ -97,6 +95,7 @@ const handleChangeItem = async (id: number) => {
           {{ item[key] }}
         </template>
       </div>
+
       <div class="grid-table__cell">
         <RoundIconButton
           class="grid-table__cell grid-table__cell__utils-btn"

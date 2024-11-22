@@ -1,11 +1,11 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import { ExposedApi } from './exportedApi'
+import { ITEM_FINDED_CH, OPEN_PRODUCT_WINDOW_CH } from '../main/channels'
 
 // Custom APIs for renderer
 const api: ExposedApi = {
-  newProductWindow: () => ipcRenderer.invoke('newProductWindow'),
-  newProductWindowWithItem: (id) => ipcRenderer.invoke('newProductWindowWithItem', id),
+  openProductWindow: (id?) => ipcRenderer.invoke(OPEN_PRODUCT_WINDOW_CH, id),
   openWebCamModal: () => ipcRenderer.invoke('openWebCamModal'),
   addItem: (item) => ipcRenderer.invoke('addItem', item),
   addItemSuccess: (callback) => ipcRenderer.on('addItemSuccess', callback),
@@ -17,7 +17,7 @@ const api: ExposedApi = {
   removeSelectedItems: (ids) => ipcRenderer.invoke('removeSelectedItems', ids),
   removeAllItems: () => ipcRenderer.invoke('removeAllItems'),
   changeItem: (itemDetails) => ipcRenderer.invoke('changeItem', itemDetails),
-  itemToChangeFinded: (callback) => ipcRenderer.on('itemToChangeFinded', callback),
+  itemFinded: (callback) => ipcRenderer.on(ITEM_FINDED_CH, callback),
   changeItemSuccess: (callback) => ipcRenderer.on('changeItemSuccess', callback),
   searchItems: (searchString: string) => ipcRenderer.invoke('searchItems', searchString)
 }

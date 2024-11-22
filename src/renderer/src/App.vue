@@ -6,7 +6,7 @@ import { IpcRendererEvent } from 'electron'
 
 const itemsStore = useItemsStore()
 
-const { addItemSuccess, itemToChangeFinded, changeItemSuccess } = window.events
+const { addItemSuccess, changeItemSuccess, itemFinded } = window.events
 
 onMounted(async () => {
   try {
@@ -19,8 +19,8 @@ onMounted(async () => {
     await itemsStore.initItemsStore()
   })
 
-  itemToChangeFinded(async (_: IpcRendererEvent, id: number) => {
-    await itemsStore.setFormPayload(Number(id))
+  itemFinded((_, item) => {
+    itemsStore.setProductData(item)
   })
 
   changeItemSuccess(async () => {

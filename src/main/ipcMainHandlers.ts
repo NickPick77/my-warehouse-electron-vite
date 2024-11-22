@@ -1,7 +1,6 @@
 import { BrowserWindow, ipcMain } from 'electron'
 import { ItemPayload } from '../renderer/src/types/items'
-import createAddProductWindow from './productWindow'
-import createWebCamWindow from './webCamWindow'
+import { createProductWindow, createWebCamWindow } from './windows/index'
 import {
   getAllItems,
   addItem,
@@ -9,56 +8,105 @@ import {
   removeItem,
   removeSelectedItems,
   searchItems,
-  newProductWindowWithItem
+  getItemById
 } from './database/queryHandlers'
+import { ADD_ITEM_CH, ITEM_FINDED_CH, OPEN_PRODUCT_WINDOW_CH } from './channels'
+
+export interface IpcInvokeResponse {
+  success: boolean
+  data?: any
+  message?: string
+}
 
 // Ipc Main Handlers
 const ipcMainHandlers = (
   preload: string,
-  config: { icon: string; },
+  config: { icon: string },
   windows: {
     mainWindow: BrowserWindow | null
-    productWindow: BrowserWindow | null
+    productWindows: BrowserWindow[]
     cameraWindow: BrowserWindow | null
   }
 ) => {
-  ipcMain.handle('newProductWindow', () => {
-    if (windows.productWindow && !windows.productWindow.isDestroyed()) {
-      windows.productWindow.focus()
-    } else {
-      windows.productWindow = createAddProductWindow(preload, config.icon) as BrowserWindow
-    }
-  })
-
-  ipcMain.handle('newProductWindowWithItem', async (_, id: number) => {
+  ipcMain.handle(OPEN_PRODUCT_WINDOW_CH, async (_, id: number): Promise<IpcInvokeResponse> => {
     try {
-      if (windows.productWindow && !windows.productWindow.isDestroyed()) {
-        windows.productWindow.focus()
-        return
+      const existingProductWindow = windows.productWindows.find((win) => {
+        console.log('win.title:', win.title)
+
+        let winId: string | null = null
+        if (win.title.includes(':')) {
+          const titleParts = win.title.split(':')
+          winId = titleParts.length > 1 ? titleParts[1] : null
+        }
+
+        const idStr = id !== undefined && id !== null ? id.toString() : null
+
+        // Gestione dei casi:
+        // 1. Entrambi winId e idStr sono null (finestre senza ID)
+        // 2. Entrambi winId e idStr sono definiti e uguali
+        // 3. Altri casi (non corrispondenti)
+        if (winId === idStr && !win.isDestroyed()) {
+          return true
+        } else if (winId === null && idStr === null && !win.isDestroyed()) {
+          return true
+        } else {
+          return false
+        }
+      })
+
+      if (existingProductWindow) {
+        existingProductWindow.focus()
+
+        return { success: true, message: 'Product Window already exists' }
       }
 
-      const item = await newProductWindowWithItem(id)
+      if (!id) {
+        const newProductWindow = createProductWindow(preload, config.icon) as BrowserWindow
 
-      if (item) {
-        windows.productWindow = createAddProductWindow(preload, config.icon) as BrowserWindow
-
-        windows.productWindow.on('ready-to-show', () => {
-          windows.productWindow?.webContents.send('itemToChangeFinded', item)
+        newProductWindow.on('closed', () => {
+          console.log('La finestra del prodotto è stata chiusa')
+          windows.productWindows = windows.productWindows.filter((win) => win !== newProductWindow)
         })
 
-        return { success: true, message: 'Window created', item }
+        windows.productWindows?.push(newProductWindow)
+
+        return { success: true, message: 'Window created' }
+      }
+
+      const item = await getItemById(id)
+
+      if (item) {
+        const newProductWindow = createProductWindow(
+          preload,
+          config.icon,
+          `${item.item_name}:${item.id}`
+        ) as BrowserWindow
+
+        newProductWindow.on('closed', () => {
+          console.log('La finestra del prodotto è stata chiusa')
+          windows.productWindows = windows.productWindows.filter((win) => win !== newProductWindow)
+        })
+
+        windows.productWindows.push(newProductWindow)
+
+        newProductWindow.webContents.on('did-finish-load', () => {
+          newProductWindow.webContents.send(ITEM_FINDED_CH, item)
+        })
+
+        return { success: true, message: 'Window created', data: item }
       } else {
-        console.log('Nessun elemento trovato con ID:', id)
-        return { success: false, error: 'Item not found' }
+        return { success: false, message: 'Item not found' }
       }
     } catch (error) {
-      console.error('Errore durante la creazione della finestra:', (error as Error).message)
-      return { success: false, error: (error as Error).message }
+      return { success: false, message: (error as Error).message }
     }
   })
 
-  ipcMain.handle('closeProductWindow', () => {
-    windows.productWindow?.close()
+  ipcMain.handle('closeProductWindow', (event) => {
+    const window = BrowserWindow.fromWebContents(event.sender)
+    if (window && !window.isDestroyed()) {
+      window.close()
+    }
   })
 
   ipcMain.handle('getAllItems', async () => {
@@ -71,7 +119,7 @@ const ipcMainHandlers = (
     }
   })
 
-  ipcMain.handle('addItem', async (_, itemDetails: ItemPayload) => {
+  ipcMain.handle(ADD_ITEM_CH, async (_, itemDetails: ItemPayload) => {
     try {
       await addItem(itemDetails)
       console.log(`[SUCCESS] addItem:`, { success: true, itemDetails })
@@ -147,8 +195,9 @@ const ipcMainHandlers = (
     }
   })
 
-  ipcMain.handle('barCodeDetected', (_, quaggaPayload) => {
-    windows.productWindow?.webContents.send('barCodeSuccess', quaggaPayload)
+  ipcMain.handle('barCodeDetected', (event, quaggaPayload) => {
+    const window = BrowserWindow.fromWebContents(event.sender)
+    window?.webContents.send('barCodeSuccess', quaggaPayload)
     if (windows.cameraWindow) {
       windows.cameraWindow.close()
     }

@@ -12,7 +12,7 @@ import { useFiltersStore } from '@renderer/store/filters'
 const itemsStore = useItemsStore()
 const filtersStore = useFiltersStore()
 
-const { newProductWindow } = window.events
+const { openProductWindow } = window.events
 
 const isHovered = ref<boolean>(false)
 const isSearchInputOpen = ref<boolean>(false)
@@ -34,7 +34,7 @@ watch(searchQuery, async (newSearchValue) => {
 })
 
 const handleOpenAddItemWindow = async () => {
-  await newProductWindow()
+  await openProductWindow()
 }
 
 const handleRemoveSelectedItems = async () => {

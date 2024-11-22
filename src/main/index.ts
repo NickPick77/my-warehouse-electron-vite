@@ -1,20 +1,17 @@
 'use strict'
 import { app, BrowserWindow } from 'electron'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
-
-import createMainWindow from './mainWindow'
-
 import { join } from 'path'
 
+import { createMainWindow } from './windows/index'
 import ipcMainHandlers from './ipcMainHandlers'
-
 import db from './database/database'
 
 process.env.ROOT = join(__dirname, '..')
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
 let mainWindow: BrowserWindow | null
-let productWindow: BrowserWindow | null
+let productWindows: BrowserWindow[] = []
 let cameraWindow: BrowserWindow | null
 
 // Preload and Icon path definition
@@ -48,9 +45,8 @@ app.whenReady().then(() => {
   // explicitly with Cmd + Q.
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
-      
       try {
-      db.close()
+        db.close()
       } catch (error) {
         console.error('Error closing the database:', error)
       }
@@ -63,38 +59,25 @@ app.whenReady().then(() => {
   ipcMainHandlers(
     preload,
     {
-      icon,
+      icon
     },
-    { mainWindow, productWindow, cameraWindow }
+    { mainWindow, productWindows, cameraWindow }
   )
 
   // Listeners for Main Window closing events
   mainWindow.on('close', function () {
-    productWindow?.close()
+    productWindows?.forEach((win) => win.close())
     cameraWindow?.close()
     mainWindow = null
-    productWindow = null
+    productWindows = productWindows?.filter((w) => w.isDestroyed())
     cameraWindow = null
   })
 
   mainWindow.on('closed', function () {
-    productWindow?.close()
+    productWindows?.forEach((win) => win.close())
     cameraWindow?.close()
     mainWindow = null
-    productWindow = null
-    cameraWindow = null
-  })
-
-  // Listeners for Add Product Window closing events
-  productWindow?.on('close', () => {
-    cameraWindow?.close()
-    productWindow = null
-    cameraWindow = null
-  })
-
-  productWindow?.on('closed', () => {
-    cameraWindow?.close()
-    productWindow = null
+    productWindows = productWindows?.filter((w) => w.isDestroyed())
     cameraWindow = null
   })
 

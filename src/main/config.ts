@@ -2,9 +2,9 @@ import { BrowserWindow, shell } from 'electron'
 import { is } from '@electron-toolkit/utils'
 import { join } from 'path'
 
-const configureWindow = (window: BrowserWindow, hash = '') => {
+const configureWindow = (window: BrowserWindow, hash = '', itemName?: string) => {
   window.webContents.on('did-finish-load', () => {
-    console.log('did-finish-load')
+    console.log('did-finish-load', window.title.split(':')[1])
   })
 
   if (hash === '') {
@@ -33,8 +33,12 @@ const configureWindow = (window: BrowserWindow, hash = '') => {
     case '#WebCamModal':
       window.setTitle('My Warehouse - Bar Code WebCam Scanner')
       break
-    case '#ProductModal':
-      window.setTitle('My Warehouse - Add Product')
+    case '#newProduct':
+      const title = itemName
+        ? `My Warehouse - Edit Product ${itemName}`
+        : 'My Warehouse - Add Product'
+      window.setTitle(title)
+      window.center()
       break
     default:
       break

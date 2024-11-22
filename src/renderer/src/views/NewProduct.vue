@@ -2,10 +2,11 @@
 import NewProductForm from '@components/NewProductForm.vue'
 import { useItemsStore } from '@renderer/store/items/index'
 import { ProductFormPayload } from '@renderer/types/items'
+import { onMounted } from 'vue'
 
 const itemsStore = useItemsStore()
 
-const { closeProductWindow } = window.events
+const { closeProductWindow, itemFinded } = window.events
 
 const handleOnCloseAddProduct = async () => {
   await closeProductWindow()
@@ -33,6 +34,13 @@ const handleOnSaveItem = async ($event: ProductFormPayload) => {
     await handleOnCloseAddProduct()
   }
 }
+
+onMounted(async () => {
+  itemFinded((_, item) => {
+    console.log(item)
+    itemsStore.setProductData(item)
+  })
+})
 </script>
 
 <template>

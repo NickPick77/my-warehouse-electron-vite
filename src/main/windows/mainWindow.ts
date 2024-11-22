@@ -1,6 +1,6 @@
 import { BrowserWindow } from 'electron'
 
-import configureWindow from './config'
+import configureWindow from '../config'
 
 const createMainWindow = (preload: string, icon: string) => {
   const mainWindow: BrowserWindow | null = new BrowserWindow({
@@ -9,9 +9,9 @@ const createMainWindow = (preload: string, icon: string) => {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload,
-      nodeIntegrationInWorker: true,
+      // nodeIntegrationInWorker: true,
       contextIsolation: true,
-      webSecurity: false,
+      // webSecurity: false,
       sandbox: false
     }
   })
