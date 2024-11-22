@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 import RoundCrossButton from '@components/RoundCrossButton.vue'
 import SquareTextButton from '@components/SquareTextButton.vue'
@@ -12,9 +12,15 @@ const { openWebCamModal, barCodeSuccess } = window.events
 
 const itemsStore = useItemsStore()
 
+const itemData = computed(() => itemsStore.getItems.find((item) => item.id === itemsStore.getFormPayload.id))
+
 const productName = ref<string>(itemsStore.getFormPayload.item_name)
-const barCode = ref<string>(itemsStore.getFormPayload.bar_code)
-const quantityNum = ref<number>(itemsStore.getFormPayload.quantity)
+const barCode = ref<string>(itemsStore.getFormPayload.bar_code ?? itemData.value?.bar_code ?? '')
+const quantityNum = ref<number>(Number(itemsStore.getFormPayload.quantity) ?? 0)
+const caliber = ref<string>(itemsStore.getFormPayload.caliber ?? '')
+const serialNumber = ref<string>(itemsStore.getFormPayload.serial_number ?? '')
+const purchasePrice = ref<number>(Number(itemsStore.getFormPayload.purchase_price) ?? 0)
+const sellingPrice = ref<number>(Number(itemsStore.getFormPayload.selling_price) ?? 0)
 const isScanning = ref<boolean>(false)
 
 const emit = defineEmits(['handleClickOnCloseWindow', 'handleClick'])
@@ -32,6 +38,10 @@ const handleClick = (type: string) => {
       bar_code: barCode.value,
       item_name: productName.value,
       quantity: quantityNum.value,
+      caliber: caliber.value,
+      serial_number: serialNumber.value,
+      purchase_price: purchasePrice.value,
+      selling_price: sellingPrice.value,
       fromChange: itemsStore.getFormPayload.fromChange
     }
   }
@@ -99,21 +109,64 @@ onMounted(() => {
           />
         </div>
       </div>
-      <div class="container__form__input-container">
-        <label for="item-name">Nome prodotto</label>
-        <input
-          id="item-name"
-          v-model="productName"
-          type="text"
-          name="item-name"
-          placeholder="Il mio prodotto"
-          required
-        />
+      <div class="container__form__inputs-wrapper">
+        <div class="container__form__input-container">
+          <label for="item-name">Nome prodotto</label>
+          <input
+            id="item-name"
+            v-model="productName"
+            type="text"
+            name="item-name"
+            placeholder="Il mio prodotto"
+            required
+          />
+        </div>
+        <div class="container__form__input-container">
+          <label for="caliber">Calibro</label>
+          <input id="caliber" v-model="caliber" type="number" name="caliber" placeholder="9mm..." />
+        </div>
+        <div class="container__form__input-container">
+          <label for="serialNumber">Numero di Serie</label>
+          <input
+            id="serialNumber"
+            v-model="serialNumber"
+            type="number"
+            name="serialNumber"
+            placeholder="0"
+          />
+        </div>
+        <div class="container__form__input-container">
+          <label for="sellingPrice">Prezzo di vendita</label>
+          <input
+            id="sellingPrice"
+            v-model="sellingPrice"
+            type="number"
+            name="sellingPrice"
+            placeholder="€0"
+          />
+        </div>
+        <div class="container__form__input-container">
+          <label for="purchasePrice">Prezzo d'acquisto</label>
+          <input
+            id="purchasePrice"
+            v-model="purchasePrice"
+            type="number"
+            name="purchasePrice"
+            placeholder="€0"
+          />
+        </div>
+        <div class="container__form__input-container">
+          <label for="quantity">Quantità</label>
+          <input
+            id="quantity"
+            v-model="quantityNum"
+            type="number"
+            name="quantity"
+            placeholder="0"
+          />
+        </div>
       </div>
-      <div class="container__form__input-container">
-        <label for="quantity">Quantità</label>
-        <input id="quantity" v-model="quantityNum" type="number" name="quantity" placeholder="0" />
-      </div>
+
       <!-- <div class="container__form__input-container">
         <label for="img-url">Immagine prodotto</label>
         <input
@@ -137,6 +190,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 @use '@renderer/assets/style/main.scss' as *;
+@use 'sass:color';
 
 $background-color: rgba(22, 126, 222, 0.7);
 .container {
@@ -169,6 +223,13 @@ $background-color: rgba(22, 126, 222, 0.7);
     padding: 10%;
     margin: 10%;
     border-radius: 16px;
+
+    &__inputs-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
 
     &__input-container {
       display: grid;
@@ -209,7 +270,7 @@ $background-color: rgba(22, 126, 222, 0.7);
           cursor: pointer;
 
           &:hover {
-            background-color: darken($background-color, 10%);
+            background-color: color.adjust($background-color, $lightness: -10%);
           }
         }
       }

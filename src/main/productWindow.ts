@@ -3,15 +3,15 @@ import configureWindow from './config'
 
 const createAddProductWindow = (preload: string, icon: string) => {
   const productWindow = new BrowserWindow({
-    width: 430,
+    width: 800,
     height: 600,
     frame: false,
     icon,
     webPreferences: {
       preload,
-      nodeIntegrationInWorker: true,
+      // nodeIntegrationInWorker: true,
       contextIsolation: true,
-      webSecurity: false
+      // webSecurity: false
     }
   })
 

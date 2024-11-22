@@ -13,10 +13,14 @@ const handleOnCloseAddProduct = async () => {
 
 const handleOnSaveItem = async ($event: ProductFormPayload) => {
   if ($event.type === 'save' && !$event.formPayload.fromChange) {
-    itemsStore.handleAddItem({
+    const suitablePayload = {
       ...$event.formPayload,
       isSelected: false
-    })
+    }
+
+    delete suitablePayload.fromChange
+
+    itemsStore.handleAddItem(suitablePayload)
 
     await handleOnCloseAddProduct()
   } else {

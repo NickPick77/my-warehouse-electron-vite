@@ -5,6 +5,8 @@ import {
   DELETE_ALL_ITEMS,
   DELETE_ITEM,
   DELETE_ITEMS_BY_ID,
+  GET_ALL_ITEMS,
+  GET_ALL_ITEMS_WITH_SPECIFIC_KEY,
   GET_ITEM_BY_ID,
   SEARCH_ITEMS,
   UPDATE_ITEM
@@ -13,11 +15,12 @@ import {
 export function getAllItems(): Promise<ItemPayload[]> {
   return new Promise((resolve, reject) => {
     try {
-      const stmt: Statement<ItemPayload[], ItemPayload> = db.prepare('SELECT * FROM items')
+      const stmt: Statement<ItemPayload[], ItemPayload> = db.prepare(GET_ALL_ITEMS_WITH_SPECIFIC_KEY)
       const items = stmt.all().map((item) => ({
         ...item,
         isSelected: Boolean(item.isSelected)
       }))
+
       resolve(items)
     } catch (err) {
       reject(err)
@@ -28,13 +31,13 @@ export function getAllItems(): Promise<ItemPayload[]> {
 export function addItem(item: ItemPayload): Promise<void> {
   return new Promise((resolve, reject) => {
     try {
-      db.transaction(() => {
-        const insertItem = db.prepare(`
-          INSERT INTO items (isSelected, bar_code, item_name, quantity)
-          VALUES (?, ?, ?, ?)
+      const insertItem = db.prepare(`
+          INSERT INTO items (isSelected, bar_code, item_name, quantity, purchase_price, selling_price, serial_number, caliber)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `)
-        insertItem.run(item.isSelected, item.bar_code, item.item_name, item.quantity)
-      })
+
+
+      insertItem.run(item.isSelected ? 1 : 0, item.bar_code, item.item_name, item.quantity, item.purchase_price, item.selling_price, item.serial_number, item.caliber)
 
       resolve()
     } catch (error) {

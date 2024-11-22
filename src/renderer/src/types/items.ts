@@ -5,12 +5,16 @@ export interface ItemPayload {
   item_name: string
   quantity: number | string
   img_url?: string
+  caliber?: string
+  purchase_price: number
+  selling_price: number
+  serial_number?: string
   img_title?: string
   bar_code_title?: string
 }
 
 export interface FormPayload extends ItemPayload {
-  fromChange: boolean
+  fromChange?: boolean
 }
 
 export interface ProductFormPayload {

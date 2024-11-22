@@ -1,10 +1,13 @@
 import { defineStore } from 'pinia'
-import { filtersState } from '@renderer/store/filters/state'
-import { filtersGetters } from '@renderer/store/filters/getters'
+import type { FiltersStateType } from '@renderer/store/filters/types'
 
 export const useFiltersStore = defineStore('filters', {
-  state: filtersState(),
-  getters: filtersGetters(),
+  state: (): FiltersStateType => ({
+    searchQuery: ''
+  }),
+  getters: {
+    getSearchQuery: (state: FiltersStateType) => state.searchQuery
+  },
   actions: {
     async setSearchQuery(searchQuery: string) {
       this.searchQuery = searchQuery

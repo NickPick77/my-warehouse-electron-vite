@@ -28,10 +28,10 @@ const createTables = db.transaction(() => {
     );
   `)
 
-  db.exec(`
-    CREATE INDEX IF NOT EXISTS idx_items_bar_code ON items (bar_code);
-    CREATE INDEX IF NOT EXISTS idx_suppliers_name ON suppliers (name);
-  `)
+  // db.exec(`
+  //   CREATE INDEX IF NOT EXISTS idx_items_bar_code ON items (bar_code);
+  //   CREATE INDEX IF NOT EXISTS idx_suppliers_name ON suppliers (name);
+  // `)
 })
 
 try {

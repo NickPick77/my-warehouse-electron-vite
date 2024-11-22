@@ -1,14 +1,9 @@
 <script setup lang="ts">
 type Themes = 'success' | 'error'
 
-interface Props {
-  literal: string
-  theme: Themes
-}
-
-const { literal } = withDefaults(defineProps<Props>(), {
-  literal: '',
-  theme: 'success'
+const { literal } = defineProps({
+  literal: { type: String, default: '' },
+  theme: { type: String as () => Themes, default: 'success' }
 })
 
 const emit = defineEmits(['handleClick'])
@@ -35,6 +30,7 @@ const handleClick = () => {
 
 <style lang="scss" scoped>
 @use '@renderer/assets/style/main.scss' as *;
+@use 'sass:color';
 
 $error-color: rgb(255, 0, 0);
 $success-color: rgb(25, 184, 57);
@@ -55,7 +51,7 @@ $success-color: rgb(25, 184, 57);
     background-color: var(--mw-success);
 
     &:hover {
-      background-color: darken($success-color, 10%);
+      background-color: color.adjust($success-color, $lightness: -10%);
       transition: all 0.5s ease-in-out;
     }
   }
@@ -64,7 +60,7 @@ $success-color: rgb(25, 184, 57);
     background-color: var(--mw-error);
 
     &:hover {
-      background-color: darken($error-color, 10%);
+      background-color: color.adjust($error-color, $lightness: -10%);
     }
   }
 }

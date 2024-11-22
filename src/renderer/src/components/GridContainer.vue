@@ -1,21 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import GridHeading from '@components/GridHeading.vue'
-import ItemRow from '@components/ItemRow.vue'
+import CheckBoxToggle from '@components/CheckBoxToggle.vue'
+import RoundIconButton from '@components/RoundIconButton.vue'
+import ItemsTable from '@components/ItemsTable.vue'
 
 import { useItemsStore } from '@renderer/store/items/index'
 import { useFiltersStore } from '@renderer/store/filters/index'
 
 const itemsStore = useItemsStore()
 const filtersStore = useFiltersStore()
-
-const suitableItems = computed(() => {
-  if (itemsStore.getFilteredItems.length || filtersStore.getSearchQuery.length >= 3) {
-    return itemsStore.getFilteredItems
-  }
-
-  return itemsStore.getItems
-})
 
 const emptyResults = computed(() => {
   if (itemsStore.getFilteredItems.length === 0 && filtersStore.getSearchQuery.length >= 3) {
@@ -32,10 +25,7 @@ const emptyResults = computed(() => {
 
 <template>
   <div class="grid">
-    <GridHeading class="grid__heading" />
-    <div v-for="item in suitableItems" :key="item.id" class="grid__item">
-      <ItemRow :item-data="item" />
-    </div>
+    <ItemsTable />
     <div v-if="emptyResults === 'no-filtered'">Nessun Risultato!</div>
     <div v-if="emptyResults === 'no-items'" class="empty-results__no-items">
       <h2>Nessun Prodotto Aggiunto!</h2>
@@ -50,10 +40,9 @@ const emptyResults = computed(() => {
 .grid {
   @include windowContainerBoxShadow;
 
-  min-height: 50vh;
+  min-height: 70vh;
   margin: 0 20px 40px;
   padding: 20px;
-  border: 1px solid rgba(0, 0, 0, 0.01);
   border-radius: 16px;
   background-color: white;
 
@@ -74,6 +63,37 @@ const emptyResults = computed(() => {
 
     &:hover {
       background-color: rgba(22, 126, 222, 0.3);
+    }
+  }
+}
+
+.grid-table {
+  display: grid;
+  align-items: end;
+  /* Il numero di colonne viene impostato dinamicamente */
+
+  &__header-cell {
+    font-weight: bold;
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+    /* Altri stili per le intestazioni */
+  }
+
+  &__cell {
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+
+    &__utils-btn {
+      &:hover {
+        & > svg {
+          transform: scale(1.2);
+          transition: transform 0.5s ease-in-out;
+        }
+      }
+    }
+
+    &:not(.grid-table__header-cell) {
+      margin-top: 12px;
     }
   }
 }

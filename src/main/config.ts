@@ -3,18 +3,12 @@ import { is } from '@electron-toolkit/utils'
 import { join } from 'path'
 
 const configureWindow = (window: BrowserWindow, hash = '') => {
-  window.webContents.on('did-finish-load', (callback) => {
-    if (typeof callback === 'function') {
-      callback()
-    }
+  window.webContents.on('did-finish-load', () => {
+    console.log('did-finish-load')
   })
 
   if (hash === '') {
     window.maximize()
-  }
-
-  if (hash === '#WebCamModal') {
-    window.setTitle('My Warehose - Bar Code WebCam Scanner')
   }
 
   window.on('ready-to-show', () => {
@@ -35,10 +29,15 @@ const configureWindow = (window: BrowserWindow, hash = '') => {
     window.loadFile(join(__dirname, `../renderer/index.html`), { hash: hash })
   }
 
-  if (hash === '#WebCamModal') {
-    window.setTitle('My Warehouse - Bar Code WebCam Scanner')
-  } else {
-    window.setTitle('My Warehouse')
+  switch (hash) {
+    case '#WebCamModal':
+      window.setTitle('My Warehouse - Bar Code WebCam Scanner')
+      break
+    case '#ProductModal':
+      window.setTitle('My Warehouse - Add Product')
+      break
+    default:
+      break
   }
 }
 

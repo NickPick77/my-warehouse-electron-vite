@@ -15,6 +15,9 @@ export const useItemsStore = defineStore('items', {
       isSelected: false,
       item_name: '',
       quantity: 0,
+      caliber: '',
+      purchase_price: 0,
+      selling_price: 0,
       fromChange: false
     },
     allItemSelected: false
@@ -90,6 +93,7 @@ export const useItemsStore = defineStore('items', {
     async setFormPayload(id: number) {
       this.items.find((item: ItemPayload) => {
         if (item.id === id) {
+          console.log('fromChange', item)
           this.formPayload = { ...item, fromChange: true }
         }
       })

@@ -27,6 +27,13 @@ export const INSERT_ITEM = `
   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `
 
+export const GET_ALL_ITEMS = `SELECT * FROM items`
+
+export const GET_ALL_ITEMS_WITH_SPECIFIC_KEY = `SELECT id, isSelected, bar_code, item_name, purchase_price, selling_price, quantity, serial_number, caliber
+    FROM items
+    ORDER BY id DESC
+    `
+
 export const DELETE_ITEM = `
     DELETE FROM items WHERE id = ?
     `
