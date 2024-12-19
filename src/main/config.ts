@@ -26,7 +26,8 @@ const configureWindow = (window: BrowserWindow, hash = '', itemName?: string) =>
     window.loadURL(`${process.env['ELECTRON_RENDERER_URL']}${hash}`)
     window.webContents.openDevTools()
   } else {
-    window.loadFile(join(__dirname, `../renderer/index.html`), { hash: hash })
+    const filePath = join(__dirname, '..', 'renderer', 'index.html');
+    window.loadFile(filePath, { hash: hash })
   }
 
   switch (hash) {

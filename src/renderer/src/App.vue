@@ -2,7 +2,6 @@
 import { onMounted } from 'vue'
 
 import { useItemsStore } from './store/items'
-import { IpcRendererEvent } from 'electron'
 
 const itemsStore = useItemsStore()
 

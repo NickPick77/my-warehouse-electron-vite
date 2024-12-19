@@ -15,8 +15,8 @@ let productWindows: BrowserWindow[] = []
 let cameraWindow: BrowserWindow | null
 
 // Preload and Icon path definition
-const preload = join(process.env.ROOT, 'preload/index.js')
-const icon = join(process.env.ROOT, 'resources/warehouse.png')
+const preload = join(process.env.ROOT, 'preload', 'index.js')
+const icon = join(process.env.ROOT, 'resources', 'warehouse.png')
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

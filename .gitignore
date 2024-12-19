@@ -7,3 +7,4 @@ out
 .editorconfig
 .vscode
 asar_decompressed
+.env

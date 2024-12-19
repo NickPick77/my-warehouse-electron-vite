@@ -12,9 +12,9 @@ on:
         default: 'debug'
         type: choice
         options:
-        - info
-        - warning
-        - debug
+          - info
+          - warning
+          - debug
       tags:
         description: 'Test scenario tags'
         required: true
@@ -44,10 +44,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.10'
-      
+
       - name: Install Dependencies
-        run:  npm install 
-      
+        run: npm install
+
       # - name: Rebuild Dependencies
       #   run:  |
       #     npm install sqlite3 --build-from-source --target_arch=arm64 --fallback-to-build
@@ -55,7 +55,7 @@ jobs:
 
       - name: Build
         run: npm run build
-      
+
       - name: List output
         run: ls -R out/
 
@@ -65,7 +65,7 @@ jobs:
           name: app-build-${{ matrix.os }}
           path: out/
         id: build-artifact
-        
+
       # - name: Download Build Artifacts
       #   uses: actions/download-artifact@v4
       #   with:
@@ -74,25 +74,29 @@ jobs:
       - name: build-mac
         if: matrix.os == 'macos-latest'
         run: npm run build:mac
-  
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
       - name: build-win
         if: matrix.os == 'windows-latest'
         run: npm run build:win
-
-      - name: pre-release
-        uses: softprops/action-gh-release@v2
-        with:
-          draft: true
-          files: |
-            dist/*.exe
-            dist/*.zip
-            dist/*.dmg
-            dist/*.AppImage
-            dist/*.snap
-            dist/*.deb
-            dist/*.rpm
-            dist/*.tar.gz
-            dist/*.yml
-            dist/*.blockmap
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      # - name: pre-release
+      #   uses: softprops/action-gh-release@v2
+      #   with:
+      #     draft: true
+      #     files: |
+      #       dist/*.exe
+      #       dist/*.zip
+      #       dist/*.dmg
+      #       dist/*.AppImage
+      #       dist/*.snap
+      #       dist/*.deb
+      #       dist/*.rpm
+      #       dist/*.tar.gz
+      #       dist/*.yml
+      #       dist/*.blockmap
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GH_TOKEN }}

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 
 import GridContainer from '@components/GridContainer.vue'
 import UtilsButtons from '@components/UtilsButtons.vue'
