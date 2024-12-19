@@ -27,7 +27,7 @@ html {
    */
 
 body {
-  @include robotoFont(12px, regular);
+  @include robotoFont(1rem, regular);
 
   margin: 0;
 }

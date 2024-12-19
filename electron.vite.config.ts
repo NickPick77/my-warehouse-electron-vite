@@ -10,6 +10,13 @@ export default defineConfig({
       rollupOptions: {
         external: ['sqlite3']
       }
+    },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: 'modern-compiler'
+        }
+      }
     }
   },
   preload: {
@@ -40,6 +47,13 @@ export default defineConfig({
           chunkFileNames: 'assets/chunk/[hash].js',
           entryFileNames: 'assets/entry/index.js',
           assetFileNames: 'assets/[ext]/[hash].[ext]'
+        }
+      }
+    },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: 'modern-compiler'
         }
       }
     }

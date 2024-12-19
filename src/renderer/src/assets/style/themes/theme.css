@@ -6,7 +6,7 @@ Color Palette
     /* Design tokens */
   
     /* Primary */
-    --mw-primary: rgba(22, 126, 222, 0.7);
+    --mw-primary: rgba(22, 126, 222, 0.8);
   
     /* Secondary */
     --mw-secondary: 27, 17, 92;
@@ -25,12 +25,12 @@ Color Palette
     --mw-neutral-120: 6, 2, 34;
   
     /* Error */
-    --mw-error: rgb(255, 0, 0);
+    --mw-error: rgba(255, 0, 0, 0.85);
     --mw-error-40: 251, 231, 231;
     --mw-error-60: 229, 110, 114;
   
     /* Success */
-    --mw-success: rgb(25, 184, 57);
+    --mw-success: rgba(25, 184, 57, 0.85);
   
     /* Alert */
     --mw-alert: rgb(243, 147, 0);

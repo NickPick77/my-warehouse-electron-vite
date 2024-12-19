@@ -6,6 +6,7 @@ export interface ItemPayload {
   quantity: number | string
   img_url?: string
   caliber?: string
+  category?: string
   purchase_price: number
   selling_price: number
   serial_number?: string

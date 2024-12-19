@@ -9,9 +9,8 @@ const {
   addItem,
   removeAllItems,
   removeSelectedItems,
-  changeItem,
+  updateItem,
   searchItems,
-  openProductWindow
 } = window.events
 
 export const useItemsStore = defineStore('items', {
@@ -23,6 +22,7 @@ export const useItemsStore = defineStore('items', {
       item_name: '',
       quantity: 0,
       caliber: '',
+      category: '',
       purchase_price: 0,
       selling_price: 0,
       fromChange: false
@@ -67,7 +67,19 @@ export const useItemsStore = defineStore('items', {
       await this.initItemsStore()
     },
     async handleAddItem(item: ItemPayload) {
-      await addItem(item)
+      try {
+        const existingItem = this.items.find((storedItem: ItemPayload) => storedItem.id === item.id)
+
+        console.log(item.quantity)
+
+        if (existingItem) {
+          await updateItem(item)
+        } else {
+          await addItem(item)
+        }
+      } catch (error) {
+        console.error('Error adding item:', error)
+      }
     },
     async handleSelectItem(id: ItemPayload['id']) {
       this.items.find((item: ItemPayload) => {
@@ -98,12 +110,7 @@ export const useItemsStore = defineStore('items', {
       this.allItemSelected = !this.allItemSelected
     },
     async setProductData(item: ItemPayload) {
-
-      console.log('fromChange', item)
-      this.formPayload = { ...item, fromChange: true }
-    },
-    async handleChangeItem(itemDetails: ItemPayload) {
-      await changeItem(itemDetails)
+      this.formPayload = { ...item }
     },
     async handleSearchItems() {
       const searchQuery = useFiltersStore().getSearchQuery
