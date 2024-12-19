@@ -10,7 +10,7 @@ import {
   getItemById,
   updateItem
 } from './database/queryHandlers'
-import { ADD_ITEM_CH, CLOSE_PRODUCT_WINDOW_CH, ITEM_FINDED_CH, OPEN_PRODUCT_WINDOW_CH, REMOVE_ITEM_CH, REMOVE_SELECTED_ITEMS_CH, UPDATE_ITEM_CH } from './channels'
+import { ADD_ITEM_CH, CLOSE_PRODUCT_WINDOW_CH, ITEM_FINDED_CH, OPEN_PRODUCT_WINDOW_CH, REMOVE_SELECTED_ITEMS_CH, UPDATE_ITEM_CH } from './channels'
 
 export interface IpcInvokeResponse {
   success: boolean

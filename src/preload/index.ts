@@ -1,7 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import { ExposedApi } from './exportedApi'
-import { ADD_ITEM_CH, CLOSE_PRODUCT_WINDOW_CH, ITEM_FINDED_CH, OPEN_PRODUCT_WINDOW_CH, REMOVE_ITEM_CH, REMOVE_SELECTED_ITEMS_CH, UPDATE_ITEM_CH } from '../main/channels'
+import { ADD_ITEM_CH, CLOSE_PRODUCT_WINDOW_CH, ITEM_FINDED_CH, OPEN_PRODUCT_WINDOW_CH, REMOVE_SELECTED_ITEMS_CH, UPDATE_ITEM_CH } from '../main/channels'
 
 // Custom APIs for renderer
 const api: ExposedApi = {
