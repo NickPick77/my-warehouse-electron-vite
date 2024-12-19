@@ -36,14 +36,17 @@ const onMenuClickToggle = () => {
 
   position: relative;
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   overflow-x: clip;
   z-index: 10;
-  color: var(--mw-neutral-0);
-  background-color: var(--mw-primary);
+  background-color: var(--mw-neutral-0);
 
   &__burger-icon {
     cursor: pointer;
+
+    & > span {
+      background-color: var(--mw-primary);
+    }
   }
 }
 </style>

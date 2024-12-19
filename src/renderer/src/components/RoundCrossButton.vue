@@ -1,12 +1,16 @@
 <script setup lang="ts">
 type Themes = 'add' | 'close'
 
-const { theme } = defineProps({
-  theme: {
-    type: String as () => Themes,
-    default: 'add' as Themes
-  }
-})
+// const { theme } = defineProps({
+//   theme: {
+//     type: String as () => Themes,
+//     default: 'add'
+//   }
+// })
+
+const { theme = 'add' } = defineProps<{
+  theme: Themes
+}>()
 
 const emit = defineEmits(['handleClick'])
 
@@ -55,9 +59,9 @@ $success-color: rgb(25, 184, 57);
   &__line-one,
   &__line-two {
     position: absolute;
-    top: 25%;
-    left: 47%;
-    height: 6px;
+    top: 29%;
+    left: 48%;
+    height: 20px;
     width: 1px;
     border-radius: 2px;
     background-color: color.adjust(rgb(0, 0, 0), $lightness: -20%);

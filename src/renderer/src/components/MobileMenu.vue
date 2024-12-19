@@ -29,12 +29,14 @@ const { isMenuOpen } = defineProps<Props>()
 
 <style lang="scss" scoped>
 @use '@renderer/assets/style/main.scss' as *;
+@use 'sass:color';
 
 .mobile-menu {
   @include windowContainerBoxShadow;
 
+  $primaryColor: rgba(22, 126, 222, 1);
+
   position: absolute;
-  z-index: 11;
   display: flex;
   width: 50%;
   flex-direction: column;
@@ -43,11 +45,11 @@ const { isMenuOpen } = defineProps<Props>()
   gap: 15px;
   padding: 2%;
   margin: 0;
-  background-color: rgba(22, 126, 222, 1);
+  background-color: var(--mw-neutral-0);
   border: 1px solid rgba(0, 0, 0, 0.01);
-  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
   transform-origin: 0% 0%;
-  transform: translateX(100%);
+  transform: translateX(-100%);
   transition:
     transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1),
     background-color 0.4s cubic-bezier(0.8, 0.4, 0.3, 1.25);
@@ -57,15 +59,18 @@ const { isMenuOpen } = defineProps<Props>()
   }
 
   &__item {
-    padding: 2%;
-    width: 100%;
+    position: relative;
+    padding: 2% 6%;
+    border-radius: 8px;
+    width: fit-content;
     text-align: center;
-    color: white;
+    color: $primaryColor;
     text-decoration: none;
-    transition: background-color 0.4s ease-out;
+    transition: background-color 0.5s ease-out, color 0.5s ease-out;
 
     &:hover {
-      background-color: rgb(22, 119, 222);
+      background-color: rgb(22, 126, 222, 0.7);
+      color: var(--mw-neutral-0);
     }
 
     & li {

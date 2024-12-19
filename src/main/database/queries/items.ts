@@ -1,6 +1,3 @@
-/**
- * Query per creare, se non esistente,la tabella items database.
- */
 export const CREATE_ITEM_TABLE = `
     CREATE TABLE IF NOT EXISTS items (
       id INTEGER PRIMARY KEY AUTOINCREMENT,

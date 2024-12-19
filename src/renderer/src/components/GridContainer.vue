@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import CheckBoxToggle from '@components/CheckBoxToggle.vue'
-import RoundIconButton from '@components/RoundIconButton.vue'
 import ItemsTable from '@components/ItemsTable.vue'
 
 import { useItemsStore } from '@renderer/store/items/index'
@@ -25,12 +23,14 @@ const emptyResults = computed(() => {
 
 <template>
   <div class="grid">
-    <ItemsTable />
-    <div v-if="emptyResults === 'no-filtered'">Nessun Risultato!</div>
-    <div v-if="emptyResults === 'no-items'" class="empty-results__no-items">
+    <div v-if="emptyResults === 'no-filtered'" class="empty-results__no-items">
+      <h2>Nessun Risultato!</h2>
+    </div>
+    <div v-else-if="emptyResults === 'no-items'" class="empty-results__no-items">
       <h2>Nessun Prodotto Aggiunto!</h2>
       <p>Clicca sul pulsante verde in alto a destra per iniziare ad aggiungere i tuoi prodotti</p>
     </div>
+    <ItemsTable v-else />
   </div>
 </template>
 
@@ -38,64 +38,14 @@ const emptyResults = computed(() => {
 @use '@renderer/assets/style/main.scss' as *;
 
 .grid {
-  @include windowContainerBoxShadow;
-
+  width: 100%;
   min-height: 70vh;
-  margin: 0 20px 40px;
   padding: 20px;
-  border-radius: 16px;
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
   background-color: white;
-
-  &__heading {
-    padding: 5px;
-    margin-bottom: 8px;
-  }
-
-  &__item {
-    @include windowContainerBoxShadow;
-
-    padding: 5px;
-    border: 1px solid rgba(0, 0, 0, 0.01);
-    border-radius: 16px;
-    margin-bottom: 8px;
-    transition: background-color 0.4s cubic-bezier(0.8, 0.4, 0.3, 1.25);
-    cursor: pointer;
-
-    &:hover {
-      background-color: rgba(22, 126, 222, 0.3);
-    }
-  }
-}
-
-.grid-table {
-  display: grid;
-  align-items: end;
-  /* Il numero di colonne viene impostato dinamicamente */
-
-  &__header-cell {
-    font-weight: bold;
-    padding: 8px;
-    border-bottom: 1px solid #ccc;
-    /* Altri stili per le intestazioni */
-  }
-
-  &__cell {
-    padding: 8px;
-    border-bottom: 1px solid #ccc;
-
-    &__utils-btn {
-      &:hover {
-        & > svg {
-          transform: scale(1.2);
-          transition: transform 0.5s ease-in-out;
-        }
-      }
-    }
-
-    &:not(.grid-table__header-cell) {
-      margin-top: 12px;
-    }
-  }
+  box-shadow: rgba(60, 64, 67, 0.3) 20px 1px 2px 0px,
+  rgba(60, 64, 67, 0.15) 20px 2px 6px 2px;
 }
 
 .empty-results {

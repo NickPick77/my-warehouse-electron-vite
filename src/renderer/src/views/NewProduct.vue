@@ -13,6 +13,11 @@ const handleOnCloseAddProduct = async () => {
 }
 
 const handleOnSaveItem = async ($event: ProductFormPayload) => {
+  if ($event.type === 'clear') {
+    await handleOnCloseAddProduct()
+    return
+  }
+
   if ($event.type === 'save' && !$event.formPayload.fromChange) {
     const suitablePayload = {
       ...$event.formPayload,
@@ -24,14 +29,7 @@ const handleOnSaveItem = async ($event: ProductFormPayload) => {
     itemsStore.handleAddItem(suitablePayload)
 
     await handleOnCloseAddProduct()
-  } else {
-    itemsStore.handleChangeItem($event.formPayload)
-
-    await handleOnCloseAddProduct()
-  }
-
-  if ($event.type === 'clear') {
-    await handleOnCloseAddProduct()
+    return
   }
 }
 

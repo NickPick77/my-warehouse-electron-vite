@@ -43,10 +43,13 @@ const onMenuClickToggle = () => {
 
 <style lang="scss" scoped>
 .burger-icon {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   position: relative;
-  z-index: 12;
-  margin: 2% 2% 0 0;
+  z-index: 120;
   height: 4vh;
+  margin: 5px 0 0 12px;
 
   &__slice {
     display: block;
@@ -54,14 +57,14 @@ const onMenuClickToggle = () => {
     height: 4px;
     margin-bottom: 5px;
 
-    background: white;
+    background-color: var(--mw-primary);
     border-radius: 3px;
 
     transform-origin: 30% 50%;
 
     transition:
       transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1),
-      background 0.5s cubic-bezier(0.77, 0.2, 0.05, 1),
+      background-color 0.5s cubic-bezier(0.77, 0.2, 0.05, 1),
       opacity 0.55s ease;
 
     &:first-child {

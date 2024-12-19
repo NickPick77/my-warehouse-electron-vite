@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 
-import RoundCrossButton from '@components/RoundCrossButton.vue'
 import SquareTextButton from '@components/SquareTextButton.vue'
 import { useItemsStore } from '@renderer/store/items'
 
@@ -20,16 +19,13 @@ const productName = ref<string>(itemsStore.getFormPayload.item_name)
 const barCode = ref<string>(itemsStore.getFormPayload.bar_code ?? itemData.value?.bar_code ?? '')
 const quantityNum = ref<number>(Number(itemsStore.getFormPayload.quantity) ?? 0)
 const caliber = ref<string>(itemsStore.getFormPayload.caliber ?? '')
+const category = ref<string>(itemsStore.getFormPayload.category ?? '')
 const serialNumber = ref<string>(itemsStore.getFormPayload.serial_number ?? '')
 const purchasePrice = ref<number>(Number(itemsStore.getFormPayload.purchase_price) ?? 0)
 const sellingPrice = ref<number>(Number(itemsStore.getFormPayload.selling_price) ?? 0)
 const isScanning = ref<boolean>(false)
 
 const emit = defineEmits(['handleClickOnCloseWindow', 'handleClick'])
-
-const handleCloseClick = () => {
-  emit('handleClickOnCloseWindow')
-}
 
 const handleClick = (type: string) => {
   let formPayload = {}
@@ -43,15 +39,10 @@ const handleClick = (type: string) => {
       caliber: caliber.value,
       serial_number: serialNumber.value,
       purchase_price: purchasePrice.value,
-      selling_price: sellingPrice.value,
-      fromChange: itemsStore.getFormPayload.fromChange
+      selling_price: sellingPrice.value
     }
   }
   emit('handleClick', { type, formPayload })
-
-  productName.value = ''
-  barCode.value = ''
-  quantityNum.value = 0
 }
 
 const startScanning = async () => {
@@ -59,7 +50,6 @@ const startScanning = async () => {
     isScanning.value = true
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      console.error('Fotocamera non disponibile')
       isScanning.value = false
       return
     }
@@ -79,16 +69,11 @@ onMounted(() => {
 
     barCode.value = quaggaPayload.codeResult.code
   })
-
-  console.log(productName.value)
 })
 </script>
 
 <template>
   <div class="container">
-    <div class="container__header">
-      <RoundCrossButton theme="close" @handle-click="handleCloseClick" />
-    </div>
     <form
       class="container__form"
       @submit.prevent="() => handleClick('save')"
@@ -127,14 +112,14 @@ onMounted(() => {
         </div>
         <div class="container__form__input-container">
           <label for="caliber">Calibro</label>
-          <input id="caliber" v-model="caliber" type="number" name="caliber" placeholder="9mm..." />
+          <input id="caliber" v-model="caliber" type="string" name="caliber" placeholder="9mm..." />
         </div>
         <div class="container__form__input-container">
           <label for="serialNumber">Numero di Serie</label>
           <input
             id="serialNumber"
             v-model="serialNumber"
-            type="number"
+            type="string"
             name="serialNumber"
             placeholder="0"
           />
@@ -168,6 +153,16 @@ onMounted(() => {
             name="quantity"
             placeholder="0"
           />
+        </div>
+        <div class="container__form__input-container">
+          <label for="quantity">Categoria</label>
+          <select id="quantity" v-model="category" name="quantity">
+            <option disabled value="">Please select one</option>
+            <option value="weapon">Armi</option>
+            <option value="ammo">Munizioni</option>
+            <option value="accessories">Accessori</option>
+            <option value="clothes">Vestiti</option>
+          </select>
         </div>
       </div>
 
@@ -203,17 +198,6 @@ $background-color: rgba(22, 126, 222, 0.7);
   align-items: center;
   // border-radius: 16px;
   overflow: hidden;
-
-  &__header {
-    @include windowContainerBoxShadow;
-
-    display: flex;
-    justify-content: flex-end;
-    width: 100%;
-    padding: 6px;
-    -webkit-app-region: drag;
-    background-color: var(--mw-primary);
-  }
 
   &__form {
     @include windowContainerBoxShadow;

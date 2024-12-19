@@ -1,5 +1,5 @@
 'use strict'
-import { app, BrowserWindow } from 'electron'
+import { app, autoUpdater, BrowserWindow } from 'electron'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { join } from 'path'
 
@@ -40,6 +40,12 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) mainWindow = createMainWindow(preload, icon)
   })
 
+  app.on('ready', () => {
+    console.log(autoUpdater.getFeedURL())
+
+    autoUpdater.checkForUpdates()
+  })
+
   // Quit when all windows are closed, except on macOS. There, it's common
   // for applications and their menu bar to stay active until the user quits
   // explicitly with Cmd + Q.
@@ -64,6 +70,14 @@ app.whenReady().then(() => {
     { mainWindow, productWindows, cameraWindow }
   )
 
+  autoUpdater.on('checking-for-update', () => {
+    console.log('Controllo aggiornamenti...')
+  })
+
+  autoUpdater.on('error', (err) => {
+    console.error('Errore durante l’update', err)
+  })
+
   // Listeners for Main Window closing events
   mainWindow.on('closed', function () {
     if (productWindows && productWindows.length > 0) {
@@ -74,15 +88,14 @@ app.whenReady().then(() => {
       })
       productWindows = []
     }
-  
+
     if (cameraWindow && !cameraWindow.isDestroyed()) {
       cameraWindow.close()
       cameraWindow = null
     }
-  
+
     mainWindow = null
   })
-  
 
   // Listeners for Camera Window closing events
   cameraWindow?.on('closed', () => {
