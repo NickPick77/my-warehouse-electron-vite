@@ -19,7 +19,8 @@
     "postinstall": "electron-builder install-app-deps",
     "build:win": "electron-builder --win --config",
     "build:mac": "electron-builder --mac --arm64 --config",
-    "build:linux": "npm run build && electron-builder --linux --config"
+    "build:linux": "npm run build && electron-builder --linux --config",
+    "publish": "electron-builder --mac --win --publish always"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
