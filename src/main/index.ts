@@ -65,27 +65,26 @@ app.whenReady().then(() => {
   )
 
   // Listeners for Main Window closing events
-  mainWindow.on('close', function () {
-    productWindows?.forEach((win) => win.close())
-    cameraWindow?.close()
-    mainWindow = null
-    productWindows = productWindows?.filter((w) => w.isDestroyed())
-    cameraWindow = null
-  })
-
   mainWindow.on('closed', function () {
-    productWindows?.forEach((win) => win.close())
-    cameraWindow?.close()
+    if (productWindows && productWindows.length > 0) {
+      productWindows.forEach((win) => {
+        if (!win.isDestroyed()) {
+          win.close()
+        }
+      })
+      productWindows = []
+    }
+  
+    if (cameraWindow && !cameraWindow.isDestroyed()) {
+      cameraWindow.close()
+      cameraWindow = null
+    }
+  
     mainWindow = null
-    productWindows = productWindows?.filter((w) => w.isDestroyed())
-    cameraWindow = null
   })
+  
 
   // Listeners for Camera Window closing events
-  cameraWindow?.on('close', () => {
-    cameraWindow = null
-  })
-
   cameraWindow?.on('closed', () => {
     cameraWindow = null
   })

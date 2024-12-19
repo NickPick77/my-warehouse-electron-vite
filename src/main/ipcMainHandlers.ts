@@ -5,12 +5,12 @@ import {
   getAllItems,
   addItem,
   removeAllItems,
-  removeItem,
   removeSelectedItems,
   searchItems,
-  getItemById
+  getItemById,
+  updateItem
 } from './database/queryHandlers'
-import { ADD_ITEM_CH, ITEM_FINDED_CH, OPEN_PRODUCT_WINDOW_CH } from './channels'
+import { ADD_ITEM_CH, CLOSE_PRODUCT_WINDOW_CH, ITEM_FINDED_CH, OPEN_PRODUCT_WINDOW_CH, REMOVE_ITEM_CH, REMOVE_SELECTED_ITEMS_CH, UPDATE_ITEM_CH } from './channels'
 
 export interface IpcInvokeResponse {
   success: boolean
@@ -102,7 +102,7 @@ const ipcMainHandlers = (
     }
   })
 
-  ipcMain.handle('closeProductWindow', (event) => {
+  ipcMain.handle(CLOSE_PRODUCT_WINDOW_CH, (event) => {
     const window = BrowserWindow.fromWebContents(event.sender)
     if (window && !window.isDestroyed()) {
       window.close()
@@ -143,19 +143,9 @@ const ipcMainHandlers = (
     }
   })
 
-  ipcMain.handle('removeItem', async (_, itemId: number) => {
+  ipcMain.handle(REMOVE_SELECTED_ITEMS_CH, async (_, itemIds: number[]) => {
     try {
-      await removeItem(itemId)
-      console.log('item-removed', { success: true })
-      windows.mainWindow?.webContents.send('itemRemoved', { success: true })
-    } catch (error) {
-      console.error('item-removed', { success: false, error: (error as Error).message })
-      windows.mainWindow?.webContents.send('itemRemoved', { success: false })
-    }
-  })
-
-  ipcMain.handle('removeSelectedItems', async (_, itemIds: number[]) => {
-    try {
+      console.log('itemIds:', itemIds)
       await removeSelectedItems(itemIds)
       console.log('item-removed', { success: true })
       windows.mainWindow?.webContents.send('itemRemoved', { success: true })
@@ -165,9 +155,9 @@ const ipcMainHandlers = (
     }
   })
 
-  ipcMain.handle('changeItem', async (_, itemDetails: ItemPayload) => {
+  ipcMain.handle(UPDATE_ITEM_CH, async (_, itemDetails: ItemPayload) => {
     try {
-      await addItem(itemDetails)
+      await updateItem(itemDetails)
       console.log(`[SUCCESS] changeItem:`, { success: true, itemDetails })
       windows.mainWindow?.webContents.send('changeItemSuccess', { success: true })
     } catch (error) {

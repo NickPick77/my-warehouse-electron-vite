@@ -14,10 +14,9 @@ export interface ExposedApi {
   closeProductWindow: () => Promise<void>
   getAllItems: () => Promise<ItemsDBpayload>
   addItem: (payload: ItemPayload) => Promise<void>
-  removeItem: (id: number) => Promise<void>
   removeSelectedItems: (ids: number[]) => Promise<void>
   removeAllItems: () => Promise<void>
-  changeItem: (itemDetails: ItemPayload) => Promise<void>
+  updateItem: (itemDetails: ItemPayload) => Promise<void>
   itemFinded: (callback: (_: IpcRendererEvent, itemDetails: ItemPayload) => void) => void
   changeItemSuccess: (callback: () => void) => void
   searchItems: (searchString: string) => Promise<ItemsDBpayload>

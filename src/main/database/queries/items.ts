@@ -9,6 +9,7 @@ export const CREATE_ITEM_TABLE = `
       item_name TEXT NOT NULL,
       quantity INTEGER,
       caliber TEXT,
+      category TEXT,
       serial_number TEXT UNIQUE,
       manufacturer TEXT,
       purchase_price REAL,
@@ -28,6 +29,8 @@ export const INSERT_ITEM = `
 `
 
 export const GET_ALL_ITEMS = `SELECT * FROM items`
+
+export const GET_ALL_ITEMS_BY_CATEGORY = `SELECT * FROM items WHERE category = @category`
 
 export const GET_ALL_ITEMS_WITH_SPECIFIC_KEY = `SELECT id, isSelected, bar_code, item_name, purchase_price, selling_price, quantity, serial_number, caliber
     FROM items
@@ -74,7 +77,7 @@ export const GET_ITEM_BY_ID = `
 `
 
 export const SEARCH_ITEMS = `
-  SELECT *
+  SELECT id, isSelected, bar_code, item_name, purchase_price, selling_price, quantity, serial_number, caliber
   FROM items
   WHERE bar_code || item_name LIKE '%' || ? || '%'
 `

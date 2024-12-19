@@ -5,7 +5,6 @@ const createProductWindow = (preload: string, icon: string, itemName?: string) =
   const productWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    frame: false,
     icon,
     webPreferences: {
       preload,

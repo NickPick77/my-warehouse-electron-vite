@@ -3,20 +3,25 @@ import type { Statement } from 'better-sqlite3'
 import db from './database'
 import {
   DELETE_ALL_ITEMS,
-  DELETE_ITEM,
   DELETE_ITEMS_BY_ID,
-  GET_ALL_ITEMS,
   GET_ALL_ITEMS_WITH_SPECIFIC_KEY,
+  GET_ALL_ITEMS_BY_CATEGORY,
   GET_ITEM_BY_ID,
   SEARCH_ITEMS,
-  UPDATE_ITEM
 } from './queries/items'
 
-export function getAllItems(): Promise<ItemPayload[]> {
+export function getAllItems(category = ""): Promise<ItemPayload[]> {
   return new Promise((resolve, reject) => {
+    
     try {
-      const stmt: Statement<ItemPayload[], ItemPayload> = db.prepare(GET_ALL_ITEMS_WITH_SPECIFIC_KEY)
-      const items = stmt.all().map((item) => ({
+      const SUITABLE_QUERY = category ? GET_ALL_ITEMS_BY_CATEGORY : GET_ALL_ITEMS_WITH_SPECIFIC_KEY
+      const params = category ? { category } : {};
+
+
+      const stmt: Statement<any, ItemPayload> = db.prepare(
+        SUITABLE_QUERY
+      )
+      const items = stmt.all(params).map((item) => ({
         ...item,
         isSelected: Boolean(item.isSelected)
       }))
@@ -36,8 +41,16 @@ export function addItem(item: ItemPayload): Promise<void> {
           VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `)
 
-
-      insertItem.run(item.isSelected ? 1 : 0, item.bar_code, item.item_name, item.quantity, item.purchase_price, item.selling_price, item.serial_number, item.caliber)
+      insertItem.run(
+        item.isSelected ? 1 : 0,
+        item.bar_code,
+        item.item_name,
+        item.quantity,
+        item.purchase_price,
+        item.selling_price,
+        item.serial_number,
+        item.caliber
+      )
 
       resolve()
     } catch (error) {
@@ -58,31 +71,13 @@ export function removeAllItems(): Promise<void> {
   })
 }
 
-export function removeItem(itemId: number): Promise<void> {
-  return new Promise((resolve, reject) => {
-    try {
-      const changes = db.prepare(DELETE_ITEM).run(itemId).changes
-
-      if (changes > 0) {
-        resolve()
-      } else {
-        reject(new Error('Item not found'))
-      }
-    } catch (error) {
-      reject(error)
-    }
-  })
-}
-
 export function removeSelectedItems(itemIds: number[]): Promise<void> {
   return new Promise((resolve, reject) => {
     try {
       const stmt = db.prepare(DELETE_ITEMS_BY_ID)
 
-      db.transaction(() => {
-        itemIds.forEach((id) => {
-          stmt.run(id)
-        })
+      itemIds.forEach((id) => {
+        stmt.run(id)
       })
 
       resolve()
@@ -92,20 +87,31 @@ export function removeSelectedItems(itemIds: number[]): Promise<void> {
   })
 }
 
-export function changeItem(item: ItemPayload): Promise<void> {
+export function updateItem(item: ItemPayload): Promise<void> {
   return new Promise((resolve, reject) => {
     try {
-      const { bar_code, item_name, quantity, id } = item
-      // UPDATE_ITEM
-      db.prepare(
-        `
-        UPDATE items
-        SET bar_code = ?,
-            item_name = ?, 
-            quantity = ?
-        WHERE id = ?
-      `
-      ).run(bar_code, item_name, quantity, id)
+      const stmt = db.prepare(`UPDATE items SET
+      isSelected = ?,
+      bar_code = ?,
+      item_name = ?,
+      quantity = ?,
+      purchase_price = ?,
+      selling_price = ?,
+      serial_number = ?,
+      caliber = ?
+      WHERE id = ?`)
+
+      stmt.run(
+        item.isSelected ? 1 : 0,
+        item.bar_code,
+        item.item_name,
+        item.quantity,
+        item.purchase_price,
+        item.selling_price,
+        item.serial_number,
+        item.caliber,
+        item.id
+      )
 
       resolve()
     } catch (error) {
