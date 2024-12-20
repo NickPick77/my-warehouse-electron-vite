@@ -22,8 +22,8 @@ nsis:
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 mac:
+  asar: false
   target:
-    - dmg
     - zip
   artifactName: ${name}-${version}.${ext}
   entitlementsInherit: build/entitlements.mac.plist

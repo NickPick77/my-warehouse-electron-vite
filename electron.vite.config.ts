@@ -1,4 +1,4 @@
-import { resolve, join } from 'path'
+import { resolve } from 'path'
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import vue from '@vitejs/plugin-vue'
 
@@ -6,6 +6,7 @@ export default defineConfig({
   main: {
     plugins: [externalizeDepsPlugin()],
     build: {
+      sourcemap: 'inline',
       minify: true,
     },
     css: {
@@ -19,6 +20,7 @@ export default defineConfig({
   preload: {
     plugins: [externalizeDepsPlugin()],
     build: {
+      sourcemap: 'inline',
       minify: true
     }
   },
@@ -35,10 +37,10 @@ export default defineConfig({
     },
     plugins: [vue()],
     build: {
+      sourcemap: 'inline',
       minify: true,
       cssMinify: true,
       rollupOptions: {
-        input: resolve(__dirname, join('src','renderer','index.html')),
         external: ['better-sqlite3'],
         output: {
           chunkFileNames: 'assets/chunk/[hash].js',

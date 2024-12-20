@@ -27,7 +27,7 @@ const configureWindow = (window: BrowserWindow, hash = '', itemName?: string) =>
     window.webContents.openDevTools()
   } else {
     const filePath = join(__dirname, '..', 'renderer', 'index.html');
-    window.loadFile(filePath, { hash: hash })
+    window.loadURL(`file:///${filePath}${hash}` )
   }
 
   switch (hash) {

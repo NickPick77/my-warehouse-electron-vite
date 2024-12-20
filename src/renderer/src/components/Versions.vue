@@ -94,6 +94,10 @@ onMounted(fetchAppVersion)
 </template>
 
 <style lang="scss" scoped>
+@use 'sass:color';
+
+$gray-color: #2f3241c0;
+
 li {
   display: flex;
   flex-direction: column;
@@ -105,7 +109,7 @@ li {
   line-height: 16px;
   border-radius: 16px;
   opacity: 0.8;
-  background-color: lighten(#2f3241c0, 10%);
+  background-color: color.adjust($gray-color, $lightness: 10%);
   flex: 1 0 auto;
 }
 

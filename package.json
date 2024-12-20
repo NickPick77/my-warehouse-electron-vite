@@ -3,7 +3,7 @@
   "version": "1.0.0-alpha",
   "title": "My Warehouse",
   "description": "Warehouse management app",
-  "productName": "My Warehouse",
+  "productName": "my warehouse",
   "main": "./out/main/index.js",
   "author": "Nicolo' Piccolo",
   "license": "MIT",
