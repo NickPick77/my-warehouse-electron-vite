@@ -1,6 +1,6 @@
 {
   "name": "my-warehouse",
-  "version": "1.0.1-alpha",
+  "version": "1.0.0-alpha",
   "title": "My Warehouse",
   "description": "Warehouse management app",
   "productName": "My Warehouse",
@@ -20,7 +20,8 @@
     "build:win": "electron-builder --win --config --publish always",
     "build:mac": "electron-builder --mac --arm64 --config --publish always",
     "build:linux": "npm run build && electron-builder --linux --config",
-    "publish": "npm run build && electron-builder --mac --win --publish always"
+    "publish": "npm run build && electron-builder --mac --win --config --publish always",
+    "publish:never": "npm run build && electron-builder --mac --win --config --publish never"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
@@ -48,6 +49,7 @@
     "@vue/eslint-config-typescript": "^14.1.3 ",
     "electron": "^33.2.0",
     "electron-builder": "^25.1.8",
+    "electron-log": "^5.2.4",
     "electron-updater": "^6.3.9",
     "electron-vite": "^2.3.0",
     "eslint": "^9.15.0",

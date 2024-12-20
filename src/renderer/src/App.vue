@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 
-import { useItemsStore } from './store/items'
+import { useItemsStore } from '@renderer/store/items'
+import { useAppDataStore } from '@renderer/store/appData'
 
 const itemsStore = useItemsStore()
+const appDataStore = useAppDataStore()
 
-const { addItemSuccess, changeItemSuccess, itemFinded } = window.events
+const { addItemSuccess, changeItemSuccess, itemFinded, appUpdate } = window.ipcRendererListenerAPIs
 
 onMounted(async () => {
   try {
@@ -24,6 +26,14 @@ onMounted(async () => {
 
   changeItemSuccess(async () => {
     await itemsStore.initItemsStore()
+  })
+
+  appUpdate((_, updateInfo) => {
+    console.log('appUpdate', updateInfo)
+    if (updateInfo.isAvailable && updateInfo.status === 'downloaded') {
+      console.log('updateInfo', updateInfo)
+      appDataStore.setUpdateAvailability(updateInfo.isAvailable)
+    }
   })
 })
 </script>

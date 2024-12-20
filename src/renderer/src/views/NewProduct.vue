@@ -6,7 +6,8 @@ import { onMounted } from 'vue'
 
 const itemsStore = useItemsStore()
 
-const { closeProductWindow, itemFinded } = window.events
+const { closeProductWindow } = window.events
+const { itemFinded } = window.ipcRendererListenerAPIs
 
 const handleOnCloseAddProduct = async () => {
   await closeProductWindow()

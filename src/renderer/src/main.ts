@@ -6,12 +6,15 @@ import App from './App.vue'
 
 import quagga from './plugins/quagga'
 
+import vClickOutside from './composables/v-click-outside'
+
+import { loadLayoutMiddleware } from '@renderer/middleware/loadLayoutMiddleware'
+
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { far } from '@fortawesome/free-regular-svg-icons'
 import { fab } from '@fortawesome/free-brands-svg-icons'
-import { loadLayoutMiddleware } from '@renderer/middleware/loadLayoutMiddleware'
 
 const routes = [
   {
@@ -59,5 +62,7 @@ router.beforeEach(loadLayoutMiddleware)
 app.component('FontAwesomeIcon', FontAwesomeIcon)
 
 app.use(pinia).use(router).use(quagga)
+
+app.directive('click-outside', vClickOutside)
 
 app.mount('#app')

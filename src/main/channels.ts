@@ -7,3 +7,4 @@ export const GET_ALL_ITEMS_CH = `get_all_items`
 export const OPEN_PRODUCT_WINDOW_CH = `open_product_window`
 export const CLOSE_PRODUCT_WINDOW_CH = `close_product_window`
 export const ITEM_FINDED_CH = `item_finded`
+export const GET_APP_VERSION_CH = `get_app_version`

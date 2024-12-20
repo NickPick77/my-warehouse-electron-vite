@@ -1,33 +1,41 @@
-import { BrowserWindow, ipcMain } from 'electron'
-import { ItemPayload } from '../renderer/src/types/items'
-import { createProductWindow, createWebCamWindow } from './windows/index'
-import {
-  getAllItems,
-  addItem,
-  removeAllItems,
-  removeSelectedItems,
-  searchItems,
-  getItemById,
-  updateItem
-} from './database/queryHandlers'
-import { ADD_ITEM_CH, CLOSE_PRODUCT_WINDOW_CH, ITEM_FINDED_CH, OPEN_PRODUCT_WINDOW_CH, REMOVE_SELECTED_ITEMS_CH, UPDATE_ITEM_CH } from './channels'
+import { type BrowserWindow as BrowserWindowType, BrowserWindow, ipcMain, app } from 'electron'
+import { createProductWindow, createWebCamWindow } from '../windows/index'
+import itemsHandersService from './itemsHandlers'
+import updateHandlersService from './updateHandlers'
 
-export interface IpcInvokeResponse {
-  success: boolean
-  data?: any
-  message?: string
-}
+import { getItemById } from '../database/queryHandlers'
+import {
+  CLOSE_PRODUCT_WINDOW_CH,
+  ITEM_FINDED_CH,
+  OPEN_PRODUCT_WINDOW_CH,
+  GET_APP_VERSION_CH
+} from '../channels'
+
+import type { IpcInvokeResponse } from '../ipcMain/types'
 
 // Ipc Main Handlers
 const ipcMainHandlers = (
   preload: string,
   config: { icon: string },
   windows: {
-    mainWindow: BrowserWindow | null
-    productWindows: BrowserWindow[]
-    cameraWindow: BrowserWindow | null
+    mainWindow: BrowserWindowType | null
+    productWindows: BrowserWindowType[]
+    cameraWindow: BrowserWindowType | null
   }
 ) => {
+  itemsHandersService(windows.mainWindow).init()
+
+  updateHandlersService().init()
+
+  ipcMain.handle(GET_APP_VERSION_CH, () => {
+    try {
+      return app.getVersion()
+    } catch (error) {
+      console.error('Error getting app version:', error)
+      return (error as Error).message
+    }
+  })
+
   ipcMain.handle(OPEN_PRODUCT_WINDOW_CH, async (_, id: number): Promise<IpcInvokeResponse> => {
     try {
       const existingProductWindow = windows.productWindows.find((win) => {
@@ -61,7 +69,7 @@ const ipcMainHandlers = (
       }
 
       if (!id) {
-        const newProductWindow = createProductWindow(preload, config.icon) as BrowserWindow
+        const newProductWindow = createProductWindow(preload, config.icon) as BrowserWindowType
 
         newProductWindow.on('closed', () => {
           console.log('La finestra del prodotto è stata chiusa')
@@ -80,7 +88,7 @@ const ipcMainHandlers = (
           preload,
           config.icon,
           `${item.item_name}:${item.id}`
-        ) as BrowserWindow
+        ) as BrowserWindowType
 
         newProductWindow.on('closed', () => {
           console.log('La finestra del prodotto è stata chiusa')
@@ -106,74 +114,6 @@ const ipcMainHandlers = (
     const window = BrowserWindow.fromWebContents(event.sender)
     if (window && !window.isDestroyed()) {
       window.close()
-    }
-  })
-
-  ipcMain.handle('getAllItems', async () => {
-    try {
-      const items: ItemPayload[] = await getAllItems()
-      return { success: true, items }
-    } catch (error) {
-      console.error('Error retrieving items:', error)
-      return { success: false, error: (error as Error).message }
-    }
-  })
-
-  ipcMain.handle(ADD_ITEM_CH, async (_, itemDetails: ItemPayload) => {
-    try {
-      await addItem(itemDetails)
-      console.log(`[SUCCESS] addItem:`, { success: true, itemDetails })
-      windows.mainWindow?.webContents.send('addItemSuccess')
-    } catch (error) {
-      console.error(`[ERROR] addItem:`, error)
-      windows.mainWindow?.webContents.send('addItemSuccess', (error as Error).message)
-    }
-  })
-
-  ipcMain.handle('removeAllItems', async () => {
-    try {
-      await removeAllItems()
-
-      windows.mainWindow?.webContents.send('itemsRemoved', { success: true })
-    } catch (error) {
-      windows.mainWindow?.webContents.send('itemsRemoved', {
-        success: false,
-        error: (error as Error).message
-      })
-    }
-  })
-
-  ipcMain.handle(REMOVE_SELECTED_ITEMS_CH, async (_, itemIds: number[]) => {
-    try {
-      console.log('itemIds:', itemIds)
-      await removeSelectedItems(itemIds)
-      console.log('item-removed', { success: true })
-      windows.mainWindow?.webContents.send('itemRemoved', { success: true })
-    } catch (error) {
-      console.error('item-removed', { success: false, error: (error as Error).message })
-      windows.mainWindow?.webContents.send('itemRemoved', { success: false })
-    }
-  })
-
-  ipcMain.handle(UPDATE_ITEM_CH, async (_, itemDetails: ItemPayload) => {
-    try {
-      await updateItem(itemDetails)
-      console.log(`[SUCCESS] changeItem:`, { success: true, itemDetails })
-      windows.mainWindow?.webContents.send('changeItemSuccess', { success: true })
-    } catch (error) {
-      console.error(`[ERROR] changeItem:`, error)
-      windows.mainWindow?.webContents.send('changeItemSuccess', { success: false })
-    }
-  })
-
-  ipcMain.handle('searchItems', async (_, searchString: string) => {
-    try {
-      const items: ItemPayload[] = await searchItems(searchString)
-
-      return { success: true, items }
-    } catch (error) {
-      console.error('Error retrieving items:', error)
-      return { success: false, error: (error as Error).message }
     }
   })
 

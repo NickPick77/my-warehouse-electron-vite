@@ -7,7 +7,8 @@ import { useItemsStore } from '@renderer/store/items'
 import type { QuaggaImageObject } from '@renderer/types/quagga'
 import { type IpcRendererEvent } from 'electron'
 
-const { openWebCamModal, barCodeSuccess } = window.events
+const { openWebCamModal } = window.events
+const { barCodeSuccess } = window.ipcRendererListenerAPIs
 
 const itemsStore = useItemsStore()
 

@@ -1,7 +1,18 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import { ExposedApi } from './exportedApi'
-import { ADD_ITEM_CH, CLOSE_PRODUCT_WINDOW_CH, ITEM_FINDED_CH, OPEN_PRODUCT_WINDOW_CH, REMOVE_SELECTED_ITEMS_CH, UPDATE_ITEM_CH } from '../main/channels'
+import { ExposedApi, ExposedListenersApi } from './exportedApi'
+import {
+  ADD_ITEM_CH,
+  GET_ALL_ITEMS_CH,
+  CLOSE_PRODUCT_WINDOW_CH,
+  ITEM_FINDED_CH,
+  OPEN_PRODUCT_WINDOW_CH,
+  REMOVE_SELECTED_ITEMS_CH,
+  UPDATE_ITEM_CH,
+  GET_APP_VERSION_CH,
+  REMOVE_ALL_ITEMS_CH,
+  SEARCH_ITEMS_CH
+} from '../main/channels'
 
 // Custom APIs for renderer
 const api: ExposedApi = {
@@ -9,21 +20,24 @@ const api: ExposedApi = {
   closeProductWindow: () => ipcRenderer.invoke(CLOSE_PRODUCT_WINDOW_CH),
   openWebCamModal: () => ipcRenderer.invoke('openWebCamModal'),
   addItem: (item) => ipcRenderer.invoke(ADD_ITEM_CH, item),
-  addItemSuccess: (callback) => ipcRenderer.on('addItemSuccess', callback),
-  barCodeSuccess: (callback) => ipcRenderer.on('barCodeSuccess', callback),
   barCodeDetected: (quaggaPayload) => ipcRenderer.invoke('barCodeDetected', quaggaPayload),
-  getAllItems: () => ipcRenderer.invoke('getAllItems'),
+  getAllItems: () => ipcRenderer.invoke(GET_ALL_ITEMS_CH),
   removeSelectedItems: (ids) => ipcRenderer.invoke(REMOVE_SELECTED_ITEMS_CH, ids),
-  removeAllItems: () => ipcRenderer.invoke('removeAllItems'),
+  removeAllItems: () => ipcRenderer.invoke(REMOVE_ALL_ITEMS_CH),
   updateItem: (itemDetails) => ipcRenderer.invoke(UPDATE_ITEM_CH, itemDetails),
-  itemFinded: (callback) => ipcRenderer.on(ITEM_FINDED_CH, callback),
-  changeItemSuccess: (callback) => ipcRenderer.on('changeItemSuccess', callback),
-  searchItems: (searchString: string) => ipcRenderer.invoke('searchItems', searchString)
+  searchItems: (searchString: string) => ipcRenderer.invoke(SEARCH_ITEMS_CH, searchString),
+  updateHandler: (cmd) => ipcRenderer.invoke('update_handler', cmd)
 }
 
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
+const ipcRendererListenerAPIs: ExposedListenersApi = {
+  appUpdate: (callback) => ipcRenderer.on('app_update', callback),
+  changeItemSuccess: (callback) => ipcRenderer.on('changeItemSuccess', callback),
+  itemFinded: (callback) => ipcRenderer.on(ITEM_FINDED_CH, callback),
+  addItemSuccess: (callback) => ipcRenderer.on('addItemSuccess', callback),
+  barCodeSuccess: (callback) => ipcRenderer.on('barCodeSuccess', callback),
+
+}
+
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
@@ -31,10 +45,10 @@ if (process.contextIsolated) {
       node: () => process.versions.node,
       chrome: () => process.versions.chrome,
       electron: () => process.versions.electron,
-      application: () => process.env.npm_package_version
-      // we can also expose variables, not just functions
+      application: () => ipcRenderer.invoke(GET_APP_VERSION_CH)
     })
     contextBridge.exposeInMainWorld('events', api)
+    contextBridge.exposeInMainWorld('ipcRendererListenerAPIs', ipcRendererListenerAPIs)
   } catch (error) {
     console.error(error)
   }

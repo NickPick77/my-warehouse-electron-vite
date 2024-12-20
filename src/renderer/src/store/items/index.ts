@@ -109,7 +109,7 @@ export const useItemsStore = defineStore('items', {
 
       this.allItemSelected = !this.allItemSelected
     },
-    async setProductData(item: ItemPayload) {
+    setProductData(item: ItemPayload) {
       this.formPayload = { ...item }
     },
     async handleSearchItems() {
